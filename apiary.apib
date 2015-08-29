@@ -1,0 +1,714 @@
+FORMAT: 1A
+HOST: http://api.cocoaconferences.org/
+
+# CocoaConferences
+
+CocoaConferences is a tool to discover and share conferences about or related to 
+Cooca. It allows you to interact with other users who are interested in these 
+conferences.
+
+# CocoaConferences API Root [/]
+
+This resource does not have any attributes. Instead it offers the initial API affordances in the form of the links in the JSON body.
+
+It is recommend to follow the “url” link values, [Link](https://tools.ietf.org/html/rfc5988) or Location headers where applicable to retrieve resources. Instead of constructing your own URLs, to keep your client decoupled from implementation details.
+
+## Retrieve the Entry Point [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "events": { "href": "/events" },
+                "conferences": { "href": "/conferences" },
+                "cities": { "href": "/cities" },
+                "countries": { "href": "/countries" },
+                "continents": { "href": "/continents" }
+            }
+        }
+
+# Group Events
+
+Resources related to Events in the API.
+
+An Event is a single happening which belongs to a Conference. The 
+Conference "WWDC" for example hosts an Event every year. The Event 
+itself hence has no explicit name.
+
+If the 'web' property of the event is empty, the 'web' property of
+the conference itself should be used.
+
+An Event object has the following attributes:
+
++ start (string) - An ISO8601 date when the Event starts (00:00:00.000 for 'whole day').
++ end (string) - An ISO8601 date when the Event ends (23:59:59.999 for 'whole day').
++ web (string) - The URL to the website of the Event. (optional)
++ cc:conference (Conference) - The Conference object to which the Event belongs.
++ cc:city (City) - The City where the Event happens.
++ cc:country (Country) - The Country where the Event happens.
++ cc:continent (Continent) - The Continent where the Event happens.
+
+## Events Collection [/events]
+
+### List all Events [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "self": { "href": "/events" }
+            },
+            "_embedded": {
+                "cc:event": [
+                                {
+                                    "_links": {
+                                        "self": { "href": "/events/1" }
+                                    }
+                                    "start": "2015-06-15T00:00:00.000Z",
+                                    "end": "2015-06-17T23:59:59.999Z",
+                                    "web": "https://skillsmatter.com/conferences/6687-ioscon-2015-the-conference-for-ios-and-swift-developers",
+                                    "_embedded": {
+                                        "cc:conference": {
+                                            "_links": {
+                                                "self": { "href": "/conferences/1" },
+                                                "cc:event": { "href": "/conferences/1/events" }
+                                            },
+                                            "name": "iOSCon"
+                                        }
+                                    }
+                                    "cc:city": {
+                                        "href": "/cities/gblon",
+                                        "code": "gblon",
+                                        "name": "London"
+                                    }
+                                    "cc:country": {
+                                        "href": "/countries/gb",
+                                        "code": "gb",
+                                        "name": "United Kingdom"
+                                    }
+                                    "cc:continent": {
+                                        "href": "/continents/eu",
+                                        "code": "eu",
+                                        "name": "Europe"
+                                    }
+                                }
+                            ]
+            }
+        }
+
+### Create a New Event [POST]
+
+You may add events to the app, either your own or ones that are simply missing
+but would be interesting for you fellow Cocoa people. It takes a JSON document
+containing start date, end date, the name of the conference that the event belongs
+to and the location.
+
+#### Conference
+
+You only need to specify the name of the Conference. We'll check whether we 
+already know this conference by matching the name and adding the event 
+accordingly. If you want to make it 100% sure that the event is added to the
+correct conference, please use `POST on /conferences/{conference_id}/events`.
+
+If we can't match the name, a new conference is created.
+
+#### Location
+
+You need to specify three things for the location to be valid:
+
+- city
+- country
+- continent
+
+To keep it simple, we haven't added all cities and countries in the world (yet). 
+However, we took the effort to add all of the continents. If you're lucky and 
+there is already an Event listed for the location you need, you only need to specify
+the ID of the city. We use [UNLOCODE](http://www.unece.org/cefact/locode/service/location.html)
+to identify cities and countries.
+
+If you're not lucky and the country and/or city has not been added yet, please 
+make the effort and tell us the [UNLOCODE](http://www.unece.org/cefact/locode/service/location.html)
+as well as the name (in english - clients may add localization through the code).
+
++ Request (application/json)
+
+        {
+            "start": "2015-06-15T00:00:00.000Z",
+            "end": "2015-06-17T23:59:59.999Z",
+            "web": "https://skillsmatter.com/conferences/6687-ioscon-2015-the-conference-for-ios-and-swift-developers",
+            "cc:conference": {
+                "name": "iOSCon"
+            },
+            "cc:city": {
+                "code": "gblon",
+                "name": "London"
+            },
+            "cc:country": {
+                "code": "gb",
+                "name": "United Kingdom"
+            }
+            "cc:continent": {
+                "code": "eu"
+            }
+        }
+
++ Response 201 (application/hal+json)
+
+    + Headers
+
+            Location: /events/1
+
+    + Body
+
+            {
+                "_links": {
+                    "self": { "href": "/events/1" }
+                }
+                "start": "2015-06-15T00:00:00.000Z",
+                "end": "2015-06-17T23:59:59.999Z",
+                "web": "https://skillsmatter.com/conferences/6687-ioscon-2015-the-conference-for-ios-and-swift-developers",
+                "_embedded": {
+                    "cc:conference": {
+                        "_links": {
+                            "self": { "href": "/conferences/1" },
+                            "cc:event": { "href": "/conferences/1/events" }
+                        },
+                        "name": "iOSCon"
+                    }
+                }
+                "cc:city": {
+                    "href": "/cities/gblon",
+                    "code": "gblon",
+                    "name": "London"
+                }
+                "cc:country": {
+                    "href": "/countries/gb",
+                    "code": "gb",
+                    "name": "United Kingdom"
+                }
+                "cc:continent": {
+                    "href": "/continents/eu",
+                    "code": "eu",
+                    "name": "Europe"
+                }
+            }
+            
+## Event [/events/{event_id}]
+
++ Parameters
+    + event_id: 1 (required, number) - ID of the Event in form of an integer
+            
+### View an Events Detail [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "self": { "href": "/events/1" }
+            }
+            "start": "2015-06-15T00:00:00.000Z",
+            "end": "2015-06-17T23:59:59.999Z",
+            "web": "https://skillsmatter.com/conferences/6687-ioscon-2015-the-conference-for-ios-and-swift-developers",
+            "_embedded": {
+                "cc:conference": {
+                    "_links": {
+                        "self": { "href": "/conferences/1" },
+                        "cc:event": { "href": "/conferences/1/events" }
+                    },
+                    "name": "iOSCon"
+                }
+            }
+            "cc:city": {
+                "href": "/cities/gblon",
+                "code": "gblon",
+                "name": "London"
+            }
+            "cc:country": {
+                "href": "/countries/gb",
+                "code": "gb",
+                "name": "United Kingdom"
+            }
+            "cc:continent": {
+                "href": "/continents/eu",
+                "code": "eu",
+                "name": "Europe"
+            }
+        }
+            
+# Group Conferences
+
+Resources related to Conferences in the API.
+
+A Conference object has the following attributes:
+
++ name (string) - The name of the Conference
++ web (string) - The URL to the website of the whole conference (Optional)
+
+## Conferences Collection [/conferences]
+
+A Conference is a collection of Events which have the same name. Events can happen 
+at different dates or different places each time so that the Conference itself
+has none of these properties.
+
+The 'web' property is only used if the Events of the Conference don't have URLs
+of their own. Example: there is a dedicated URL for every NSSpain Event (for 2014 it's 
+`http://nsspain.com/2014/`), but there is also `http://nsspain.com` itself which serves
+as a fallback and redirects to the most current event (which is, as of today 
+`http://nsspain.com/2015/`).
+
+You **can not** create conferences directly because we don't want to have 'empty' conferences.
+When the first Event is added for a Conference, the Conference is created
+automatically. Once a Conference is created, you **can** create new Events for it.
+
+### List all Conferences [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "self": { "href": "/conferences" }
+            },
+            "_embedded": {
+                "cc:conference": [
+                    {
+                        "_links": {
+                            "self": { "href": "/conferences/1" },
+                            "cc:event": { "href": "/conferences/1/events" }
+                        },
+                        "name": "iOSCon",
+                        "web": "http://ioscon.com/"
+                    }
+                ]
+            }
+        }
+        
+## Conference [/conferences/{conference_id}]
+
++ Parameters
+    + conference_id: 1 (required, number) - ID of the Conference in form of an integer
+
+### View a Conferences Detail [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "self": { "href": "/conferences/1" },
+                "cc:event": { "href": "/conferences/1/events" }
+            },
+            "name": "iOSCon",
+            "web": "http://ioscon.com/"
+        }
+        
+## A Conferences’ Events Collection [/conferences/{conference_id}/events]
+
++ Parameters
+    + conference_id: 1 (required, number) - ID of the Conference in form of an integer
+    
+### List all Events for a Conference [GET]
+
++ Response 200 (application/hal+json) 
+
+        {
+            "_links": {
+                "self": { "href": "/conferences/1/events" }
+            },
+            "_embedded": {
+                "cc:event": [
+                                {
+                                    "_links": {
+                                        "self": { "href": "/events/1" }
+                                    }
+                                    "start": "2015-06-15T00:00:00.000Z",
+                                    "end": "2015-06-17T23:59:59.999Z",
+                                    "web": "https://skillsmatter.com/conferences/6687-ioscon-2015-the-conference-for-ios-and-swift-developers",
+                                    "_embedded": {
+                                        "cc:conference": {
+                                            "_links": {
+                                                "self": { "href": "/conferences/1" },
+                                                "cc:event": { "href": "/conferences/1/events" }
+                                            },
+                                            "name": "iOSCon",
+                                            "web": "http://ioscon.com/"
+                                        }
+                                    }
+                                    "cc:city": {
+                                        "href": "/cities/gblon",
+                                        "code": "gblon",
+                                        "name": "London"
+                                    }
+                                    "cc:country": {
+                                        "href": "/countries/gb",
+                                        "code": "gb",
+                                        "name": "United Kingdom"
+                                    }
+                                    "cc:continent": {
+                                        "href": "/continents/eu",
+                                        "code": "eu",
+                                        "name": "Europe"
+                                    }
+                                }
+                            ]
+            }
+        }
+        
+# Group Locations
+
+Resources related to Locations in the API.
+
+A Location object has the following attributes:
+
++ code (string) - The code 
+    + Continents: [ISO-3166](http://www.countrycallingcodes.com/iso-country-codes/) 
+    + Countries and Cities: [UNLOCODE](http://www.unece.org/cefact/locode/service/location.html)
++ name (string) - The name of the Location (in English)
+
+## Continents Collection [/continents]
+
+### List all Continents [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "self": { "href": "/continents" }
+            },
+            "_embedded": {
+                "cc:continent": [
+                    {
+                        "_links": {
+                            "self": { "href": "/continents/eu" },
+                            "cc:country": { "href": "/continents/eu/countries" },
+                            "cc:event": { "href": "/continents/eu/events" }
+                        },
+                        "code": "eu",
+                        "name": "Europe"
+                    }
+                ]
+            }
+        }
+        
+## Continent [/continents/{continent_code}]
+
++ Parameters
+    + continent_code: eu (required, string) - Code of the Continent as specified in [ISO-3166](http://www.countrycallingcodes.com/iso-country-codes/)
+    
+### View a Continents Detail [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "self": { "href": "/continents/eu" },
+                "cc:country": { "href": "/continents/eu/countries" },
+                "cc:event": { "href": "/continents/eu/events" }
+            },
+            "code": "eu",
+            "name": "Europe"
+        }
+        
+## A Continents’ Countries Collection [/continents/{continent_code}/countries]
+
++ Parameters
+    + continent_code: eu (required, string) - Code of the Continent as specified in [ISO-3166](http://www.countrycallingcodes.com/iso-country-codes/)
+    
+### List all Countries for a Continent [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "self": { "href": "/continents/eu/countries" }
+            },
+            "_embedded": {
+                "cc:country": [
+                    {
+                        "_links": {
+                            "self": { "href": "/countries/gb" },
+                            "cc:continent": { "href": "continent/eu" },
+                            "cc:city": { "href": "/countries/gb/cities" },
+                            "cc:event": { "href": "/countries/gb/events" }
+                        },
+                        "code": "gb",
+                        "name": "United Kingdom"
+                    }
+                ]
+            }
+        }
+        
+## A Continents’ Events Collection [/continents/{continent_code}/events]
+
++ Parameters
+    + continent_code: eu (required, string) - Code of the Continent as specified in [ISO-3166](http://www.countrycallingcodes.com/iso-country-codes/)
+    
+### List all Events for a Continent [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "self": { "href": "/continents/eu/events" }
+            },
+            "_embedded": {
+                "cc:event": [
+                                {
+                                    "_links": {
+                                        "self": { "href": "/events/1" }
+                                    }
+                                    "start": "2015-06-15T00:00:00.000Z",
+                                    "end": "2015-06-17T23:59:59.999Z",
+                                    "web": "https://skillsmatter.com/conferences/6687-ioscon-2015-the-conference-for-ios-and-swift-developers",
+                                    "_embedded": {
+                                        "cc:conference": {
+                                            "_links": {
+                                                "self": { "href": "/conferences/1" },
+                                                "cc:event": { "href": "/conferences/1/events" }
+                                            },
+                                            "name": "iOSCon",
+                                            "web": "http://ioscon.com"
+                                        }
+                                    }
+                                    "cc:city": {
+                                        "href": "/cities/gblon",
+                                        "code": "gblon",
+                                        "name": "London"
+                                    }
+                                    "cc:country": {
+                                        "href": "/countries/gb",
+                                        "code": "gb",
+                                        "name": "United Kingdom"
+                                    }
+                                    "cc:continent": {
+                                        "href": "/continents/eu",
+                                        "code": "eu",
+                                        "name": "Europe"
+                                    }
+                                }
+                            ]
+            }
+        }
+        
+## Countries Collection [/countries]
+
+### List all Countries [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "self": { "href": "/countries" }
+            },
+            "_embedded": {
+                "cc:country": [
+                    {
+                        "_links": {
+                            "self": { "href": "/countries/gb" },
+                            "cc:continent": { "href": "continent/eu" },
+                            "cc:city": { "href": "/countries/gb/cities" },
+                            "cc:event": { "href": "/countries/gb/events" }
+                        },
+                        "code": "gb",
+                        "name": "United Kingdom"
+                    }
+                ]
+            }
+        }
+
+## Country [/countries/{country_code}]
+
++ Parameters
+    + country_code: gb (required, string) - Code of the Country as specified in [UNLOCODE](http://www.unece.org/cefact/locode/service/location.html)
+    
+### View a Continents Detail [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "self": { "href": "/countries/gb" },
+                "cc:continent": { "href": "continent/eu" },
+                "cc:city": { "href": "/countries/gb/cities" },
+                "cc:event": { "href": "/countries/gb/events" }
+            },
+            "code": "gb",
+            "name": "United Kingdom"
+        }
+
+## A Countries’ Cities Collection [/countries/{country_code}/cities]
+
++ Parameters
+    + country_code: gb (required, string) - Code of the Country as specified in [UNLOCODE](http://www.unece.org/cefact/locode/service/location.html)
+    
+### List all Cities for a Country [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "self": { "href": "/country/gf/cities" }
+            },
+            "_embedded": {
+                "cc:city": [
+                    {
+                        "_links": {
+                            "self": { "href": "/city/gblon" },
+                            "cc:country": { "href": "country/gb" },
+                            "cc:continent": { "href": "continent/eu" },
+                            "cc:event": { "href": "/city/gblon/events" }
+                        },
+                        "code": "gblon",
+                        "name": "London"
+                    }
+                ]
+            }
+        }
+        
+## A Countries’ Events Collection [/countries/{country_code}/events]
+
++ Parameters
+    + country_code: gb (required, string) - Code of the Country as specified in [UNLOCODE](http://www.unece.org/cefact/locode/service/location.html)
+    
+### List all Events for a Country [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "self": { "href": "/country/gb/events" }
+            },
+            "_embedded": {
+                "cc:event": [
+                                {
+                                    "_links": {
+                                        "self": { "href": "/events/1" }
+                                    }
+                                    "start": "2015-06-15T00:00:00.000Z",
+                                    "end": "2015-06-17T23:59:59.999Z",
+                                    "web": "https://skillsmatter.com/conferences/6687-ioscon-2015-the-conference-for-ios-and-swift-developers",
+                                    "_embedded": {
+                                        "cc:conference": {
+                                            "_links": {
+                                                "self": { "href": "/conferences/1" },
+                                                "cc:event": { "href": "/conferences/1/events" }
+                                            },
+                                            "name": "iOSCon",
+                                            "web": "http://ioscon.com"
+                                        }
+                                    }
+                                    "cc:city": {
+                                        "href": "/cities/gblon",
+                                        "code": "gblon",
+                                        "name": "London"
+                                    }
+                                    "cc:country": {
+                                        "href": "/countries/gb",
+                                        "code": "gb",
+                                        "name": "United Kingdom"
+                                    }
+                                    "cc:continent": {
+                                        "href": "/continents/eu",
+                                        "code": "eu",
+                                        "name": "Europe"
+                                    }
+                                }
+                            ]
+            }
+        }
+
+## Cities Collection [/cities]
+
+### List all Cities [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "self": { "href": "/cities" }
+            },
+            "_embedded": {
+                "cc:city": [
+                    {
+                        "_links": {
+                            "self": { "href": "/city/gblon" },
+                            "cc:country": { "href": "country/gb" },
+                            "cc:continent": { "href": "continent/eu" },
+                            "cc:event": { "href": "/city/gblon/events" }
+                        },
+                        "code": "gblon",
+                        "name": "London"
+                    }
+                ]
+            }
+        }
+        
+## City [/cities/{city_code}]
+
++ Parameters
+    + city_code: gblon (required, string) - Code of the City as specified in [UNLOCODE](http://www.unece.org/cefact/locode/service/location.html)
+    
+### View a Cities Detail [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "self": { "href": "/city/gblon" },
+                "cc:country": { "href": "country/gb" },
+                "cc:continent": { "href": "continent/eu" },
+                "cc:event": { "href": "/city/gblon/events" }
+            },
+            "code": "gblon",
+            "name": "London"
+        }
+        
+## A Cities’ Events Collection [/city/{city_code}/events]
+
++ Parameters
+    + city_code: gblon (required, string) - Code of the City as specified in [UNLOCODE](http://www.unece.org/cefact/locode/service/location.html)
+    
+### List all Events for a City [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "self": { "href": "/cities/gblon/events" }
+            },
+            "_embedded": {
+                "cc:event": [
+                                {
+                                    "_links": {
+                                        "self": { "href": "/events/1" }
+                                    }
+                                    "start": "2015-06-15T00:00:00.000Z",
+                                    "end": "2015-06-17T23:59:59.999Z",
+                                    "web": "https://skillsmatter.com/conferences/6687-ioscon-2015-the-conference-for-ios-and-swift-developers",
+                                    "_embedded": {
+                                        "cc:conference": {
+                                            "_links": {
+                                                "self": { "href": "/conferences/1" },
+                                                "cc:event": { "href": "/conferences/1/events" }
+                                            },
+                                            "name": "iOSCon",
+                                            "web": "http://ioscon.com"
+                                        }
+                                    }
+                                    "cc:city": {
+                                        "href": "/cities/gblon",
+                                        "code": "gblon",
+                                        "name": "London"
+                                    }
+                                    "cc:country": {
+                                        "href": "/countries/gb",
+                                        "code": "gb",
+                                        "name": "United Kingdom"
+                                    }
+                                    "cc:continent": {
+                                        "href": "/continents/eu",
+                                        "code": "eu",
+                                        "name": "Europe"
+                                    }
+                                }
+                            ]
+            }
+        }

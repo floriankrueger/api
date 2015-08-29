@@ -1,0 +1,27 @@
+reporter: apiary
+custom:
+  apiaryApiKey: e9ff948bba9c1f7684df6f82cb7ae073
+  apiaryApiName: cocoaconferences
+dry-run: null
+hookfiles: null
+language: ruby
+sandbox: false
+server: bundle exec rackup -p 9292 config.ru
+server-wait: 3
+init: false
+names: false
+only: []
+output: []
+header: []
+sorted: false
+user: null
+inline-errors: false
+details: false
+method: []
+color: true
+level: info
+timestamp: false
+silent: false
+path: []
+blueprint: apiary.apib
+endpoint: 'http://localhost:9292'

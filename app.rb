@@ -1,7 +1,10 @@
+require 'bundler'
+Bundler.require
+
 require 'sinatra'
 require 'json'
 
-require './config/environments'
+set :database_file, "./config/database.yml"
 
 get "/?" do
   content_type "application/hal+json"

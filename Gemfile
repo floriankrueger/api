@@ -9,6 +9,7 @@ group :development, :test do
 end
 
 group :test do
+  gem 'cucumber'
   gem 'rack-test'
 end
 

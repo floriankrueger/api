@@ -1,5 +1,4 @@
 
-@txn
 Feature: Create Events
 
   Every authenticated user can create new events.

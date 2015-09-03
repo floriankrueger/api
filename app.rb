@@ -1,6 +1,8 @@
 require 'sinatra'
 require 'json'
 
+require './config/environments'
+
 get "/?" do
   content_type "application/hal+json"
   { :_links => {
@@ -9,6 +11,6 @@ get "/?" do
     :cities =>      { :href => "/cities" },
     :countries =>   { :href => "/countries" },
     :continents =>  { :href => "/continents" }
-    } 
+    }
   }.to_json
 end

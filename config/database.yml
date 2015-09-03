@@ -1,0 +1,12 @@
+---
+test:
+  adapter: sqlite3
+  database: db/db_test.sqlite
+
+development:
+  adapter: sqlite3
+  database: db/db_development.sqlite
+
+production:
+  url:  <%= ENV["DATABASE_URL"] %>
+  pool: <%= ENV["DB_POOL"] || ENV['MAX_THREADS'] || 5 %>

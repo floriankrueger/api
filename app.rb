@@ -4,7 +4,9 @@ Bundler.require
 require 'sinatra'
 require 'json'
 
-set :database_file, "./config/database.yml"
+unless ENV['RACK_ENV'] == 'test'
+  set :database_file, "./config/database.yml"
+end
 
 get "/?" do
   content_type "application/hal+json"

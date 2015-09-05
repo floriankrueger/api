@@ -2,7 +2,7 @@
 require 'bundler'
 Bundler.require
 
-require 'minitest/autorun'
+require 'rspec/expectations'
 
 set :database_file, "../../config/database.yml"
 
@@ -10,7 +10,7 @@ class Event < ActiveRecord::Base
 end
 
 Given(/^There are no events in the database$/) do
-  assert_equal 0, Event.count
+  expect(Event.count).to eq(0)
 end
 
 Given(/^A new event is created$/) do
@@ -18,5 +18,5 @@ Given(/^A new event is created$/) do
 end
 
 Then(/^There should be one event in the database$/) do
-  assert_equal 1, Event.count
+  expect(Event.count).to eq(1)
 end

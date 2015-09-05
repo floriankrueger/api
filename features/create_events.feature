@@ -5,5 +5,5 @@ Feature: Create Events
 
   Scenario: Creating a new event
     Given There are no events in the database
-    And A new event is created
+    When A new event is created
     Then There should be one event in the database

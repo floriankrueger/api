@@ -1,5 +1,2 @@
 
-require 'cocoaconferences/event.rb'
-
-module CocoaConferences
-end
+require 'cocoa_conferences/event.rb'

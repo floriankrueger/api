@@ -5,3 +5,9 @@ Around do |scenario, block|
     raise ActiveRecord::Rollback
   end
 end
+
+After do |scenario|
+  # reset oauth + redis
+  TwitterClient.instance.consumer = nil
+  TwitterClient.instance.store = nil
+end

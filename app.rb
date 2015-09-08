@@ -15,25 +15,37 @@ unless ENV['RACK_ENV'] == 'test'
   set :database_file, "./config/database.yml"
 end
 
+set :show_exceptions, :after_handler
+
 get "/?" do
   content_type "application/hal+json"
   { :_links => {
-    :events =>      { :href => "/events" },
-    :conferences => { :href => "/conferences" },
-    :cities =>      { :href => "/cities" },
-    :countries =>   { :href => "/countries" },
-    :continents =>  { :href => "/continents" }
+    :events =>          { :href => "/events" },
+    :conferences =>     { :href => "/conferences" },
+    :cities =>          { :href => "/cities" },
+    :countries =>       { :href => "/countries" },
+    :continents =>      { :href => "/continents" },
+    :authentication =>  { :href => "/auth" }
     }
   }.to_json
 end
 
-post "/users/?" do
-  case params[:method]
-  when 'pin'
-    status 501
-  else
-    error = Error.new(message: "Please supply a valid authentication method.", info: { :supported_methods => ['pin'] })
-    status 400
-    error.to_json
-  end
+require './app/auth'
+
+# Errors
+
+def error_from_sinatra_error
+  { :error => { :message => env['sinatra.error'].message } }.to_json
+end
+
+error ArgumentError do
+  halt 400, { "Content-Type" => "application/json" }, error_from_sinatra_error
+end
+
+error InternalServerError do
+  halt 500, { 'Content-Type' => 'application/json' }, error_from_sinatra_error
+end
+
+error do
+  halt 500, { 'Content-Type' => 'application/json' }, error_from_sinatra_error
 end

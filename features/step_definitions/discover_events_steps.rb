@@ -7,10 +7,6 @@ When(/^He fetches the root via GET$/) do
   get "/"
 end
 
-Then(/^The HTTP Status Code should be 200$/) do
-  expect(last_response.status).to eq(200)
-end
-
 Then(/^There is a _links Hash with 5 elements$/) do
   @data = JSON.parse(last_response.body)
   expect(@data['_links']).not_to be_nil

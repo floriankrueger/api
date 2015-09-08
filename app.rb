@@ -26,3 +26,14 @@ get "/?" do
     }
   }.to_json
 end
+
+post "/users/?" do
+  case params[:method]
+  when 'pin'
+    status 501
+  else
+    error = Error.new(message: "Please supply a valid authentication method.", info: { :supported_methods => ['pin'] })
+    status 400
+    error.to_json
+  end
+end

@@ -758,4 +758,24 @@ A Challenge has the following attributes:
                 "external_auth_url": "http://api.twitter.com/abcdefg"
             }
 
+### Respond to a challenge [PUT /auth/challenges/{challenge_id}]
 
++ Parameters
+    + challenge_id (string) - The identifier of the challenge that the user wants 
+      to respond to
+
++ Request (application/json)
+
+        {
+            "token":"abcde",
+            "secret":"edcba"
+        }
+        
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "user": { "href": "/users/username" }
+            }
+            "access_token":"abcde"
+        }

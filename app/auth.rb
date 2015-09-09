@@ -13,9 +13,8 @@ post "/auth/challenges/?" do
   headers \
     "Location" => challenge.challenge_url
   { :_links => {
-      :twitter =>   { :href => challenge.twitter_url },
-      :challenge => { :href => challenge.challenge_url }
-    }
+      :self => { :href => challenge.challenge_url }
+    },
+    :external_auth_url => challenge.twitter_url
   }.to_json
-
 end

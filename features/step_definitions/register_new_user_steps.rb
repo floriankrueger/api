@@ -42,26 +42,24 @@ end
 
 Then(/^There is a link to the twitter authentication page$/) do
   data = JSON.parse(last_response.body)
-  expect(data['_links']['twitter']).to_not be_nil
-  expect(data['_links']['twitter']['href']).to_not be_nil
+  expect(data['external_auth_url']).to_not be_nil
 end
 
-Then(/^There is a link to the challenge$/) do
+Then(/^There is a self link to the challenge$/) do
   data = JSON.parse(last_response.body)
-  expect(data['_links']['challenge']).to_not be_nil
-  expect(data['_links']['challenge']['href']).to_not be_nil
+  expect(data['_links']['self']).to_not be_nil
+  expect(data['_links']['self']['href']).to_not be_nil
 end
 
 Then(/^The Location Header should point to the Challenge$/) do
   data = JSON.parse(last_response.body)
-  challenge_url = data['_links']['challenge']['href']
-
+  challenge_url = data['_links']['self']['href']
   expect(last_response.headers['Location']).to eq(challenge_url)
 end
 
 Then(/^A fake Challenge should have been created$/) do
   data = JSON.parse(last_response.body)
-  token = data['_links']['challenge']['href'].split('/').last
+  token = data['_links']['self']['href'].split('/').last
   challenge = JSON.parse(@fake_redis_store.get(token))
   expect(challenge).to_not be_nil
   expect(challenge['token']).to eq(@fake_oauth_client.request_token.token)

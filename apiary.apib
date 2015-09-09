@@ -713,3 +713,49 @@ A Location object has the following attributes:
                             ]
             }
         }
+        
+# Group Authentication
+
+Resources related to user authentication.
+
+## Authentication Root [/auth]
+
+### List all authentication resources [GET]
+
++ Response 200 (application/hal+json)
+
+        {
+            "_links": {
+                "cc:challenge": { "href": "/auth/challenges" }
+            }
+        }
+
+## Challenges Collection [/auth/challenges]
+
+A Challenge has the following attributes:
+
++ external_auth_url (string) - The URL where the user needs to go or be redirected 
+  to proceed with the authentication
+
+### Create a challenge [POST /auth/challenges{?method}]
+
++ Parameters
+    + method: pin (string) - The desired authentication method. Default and only 
+      supported method for now is 'pin'
+
++ Response 201 (application/hal+json)
+
+    + Headers
+
+            Location: /auth/challenges/dk21jrh3k2jfhwej
+
+    + Body
+
+            {
+                "_links": {
+                    "self": { "href": "/auth/challenges/dk21jrh3k2jfhwej" }
+                }
+                "external_auth_url": "http://api.twitter.com/abcdefg"
+            }
+
+

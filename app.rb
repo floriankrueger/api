@@ -1,3 +1,10 @@
+#
+# cocoaconferences.org
+#
+# Learn more about your favourite conferences for Cocoa developers, discover new conferences and
+# interact with organisers and attendees.
+#
+
 require 'bundler'
 Bundler.require
 

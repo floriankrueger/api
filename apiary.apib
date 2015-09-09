@@ -758,7 +758,7 @@ A Challenge has the following attributes:
                 "external_auth_url": "http://api.twitter.com/abcdefg"
             }
 
-### Respond to a challenge [PUT /auth/challenges/{challenge_id}]
+### Respond to a PIN challenge [PUT /auth/challenges/{challenge_id}]
 
 + Parameters
     + challenge_id (string) - The identifier of the challenge that the user wants 
@@ -767,8 +767,7 @@ A Challenge has the following attributes:
 + Request (application/json)
 
         {
-            "token":"abcde",
-            "secret":"edcba"
+            "pin":"123456"
         }
         
 + Response 200 (application/hal+json)

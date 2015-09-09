@@ -24,7 +24,8 @@ Feature: Register New User
     When The user sends a post to /auth/challenges using the method pin
     Then The Fake OAuth Client should have been called with the PIN method
     Then A fake Challenge should have been created
-    And The HTTP Status Code should be 200
-#    And There is a _links Hash with 2 elements
-#    And There is a link to the twitter page
-#    And There is a link to the challenge
+    And The HTTP Status Code should be 201
+    And The Location Header should point to the Challenge
+    And There is a _links Hash with 2 elements
+    And There is a link to the twitter authentication page
+    And There is a link to the challenge

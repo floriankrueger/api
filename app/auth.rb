@@ -8,8 +8,10 @@ post "/auth/challenges/?" do
   client = TwitterClient.instance
   challenge = client.create_challenge(method: params[:method])
 
-  status 200
+  status 201
   content_type "application/hal+json"
+  headers \
+    "Location" => challenge.challenge_url
   { :_links => {
       :twitter =>   { :href => challenge.twitter_url },
       :challenge => { :href => challenge.challenge_url }

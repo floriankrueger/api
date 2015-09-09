@@ -40,6 +40,25 @@ Then(/^The Fake OAuth Client should have been called with the PIN method$/) do
   expect(@fake_oauth_client.last_params[:oauth_callback]).to eq('oob')
 end
 
+Then(/^There is a link to the twitter authentication page$/) do
+  data = JSON.parse(last_response.body)
+  expect(data['_links']['twitter']).to_not be_nil
+  expect(data['_links']['twitter']['href']).to_not be_nil
+end
+
+Then(/^There is a link to the challenge$/) do
+  data = JSON.parse(last_response.body)
+  expect(data['_links']['challenge']).to_not be_nil
+  expect(data['_links']['challenge']['href']).to_not be_nil
+end
+
+Then(/^The Location Header should point to the Challenge$/) do
+  data = JSON.parse(last_response.body)
+  challenge_url = data['_links']['challenge']['href']
+
+  expect(last_response.headers['Location']).to eq(challenge_url)
+end
+
 Then(/^A fake Challenge should have been created$/) do
   data = JSON.parse(last_response.body)
   token = data['_links']['challenge']['href'].split('/').last

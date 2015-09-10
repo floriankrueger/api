@@ -1,4 +1,3 @@
-require 'securerandom'
 
 class TwitterClient
   include Singleton
@@ -21,14 +20,29 @@ class TwitterClient
     case method
     when 'pin'
       request_token = consumer.get_request_token(:oauth_callback => "oob")
-      challenge_token = SecureRandom.urlsafe_base64
-      token = request_token.token
-      secret = request_token.secret
-      store.set(challenge_token, { :token => token, :secret => secret }.to_json, { :ex => @challenge_expiry })
-      return TwitterChallenge.new(challenge_token: challenge_token, twitter_url: request_token.authorize_url)
+      challenge = TwitterChallenge.create(method: method, request_token: request_token)
+      store.set(challenge.challenge_token, challenge.to_store_format, { :ex => @challenge_expiry })
+      return challenge
     else
       raise InternalServerError, "Couldn't handle method #{method}. Please try again later."
     end
+  end
+
+  def get_challenge(challenge_id:)
+    unless challenge_id.is_a? String
+      raise ArgumentError, "Invalid Challenge ID"
+    end
+
+    store = self.current_store()
+    raw_challenge = store.get(challenge_id)
+
+    unless raw_challenge
+      raise ArgumentError, "Unknown Challenge ID. The Challenge might have expired."
+    end
+
+    challenge = JSON.parse(raw_challenge)
+
+
   end
 
   def current_consumer()

@@ -57,11 +57,45 @@ Then(/^The Location Header should point to the Challenge$/) do
   expect(last_response.headers['Location']).to eq(challenge_url)
 end
 
-Then(/^A fake Challenge should have been created$/) do
+Then(/^A fake PIN Challenge should have been created$/) do
   data = JSON.parse(last_response.body)
   token = data['_links']['self']['href'].split('/').last
   challenge = JSON.parse(@fake_redis_store.get(token))
   expect(challenge).to_not be_nil
   expect(challenge['token']).to eq(@fake_oauth_client.request_token.token)
   expect(challenge['secret']).to eq(@fake_oauth_client.request_token.secret)
+  expect(challenge['method']).to eq('pin')
+end
+
+Given(/^The user has never logged in before$/) do
+  expect(User.count).to eq(0)
+end
+
+Given(/^There is a pending Twitter PIN Challenge$/) do
+  post "/auth/challenges?method=pin"
+  expect(last_response.headers['Location']).to_not be_nil
+end
+
+When(/^The user sends a POST to the given challenge url with correct auth data$/) do
+  post last_response.headers['Location'], { "Content-Type" => "application/json" }, { "pin" => "123456" }
+end
+
+Then(/^An access token \(session\) should have been created$/) do
+  pending # Write code here that turns the phrase above into concrete actions
+end
+
+Then(/^A user account should have been created$/) do
+  expect(User.count).to eq(1)
+end
+
+Then(/^There is a link to the user$/) do
+  pending # Write code here that turns the phrase above into concrete actions
+end
+
+Then(/^There is an access_token$/) do
+  pending # Write code here that turns the phrase above into concrete actions
+end
+
+Then(/^There is an access_secret$/) do
+  pending # Write code here that turns the phrase above into concrete actions
 end

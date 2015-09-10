@@ -11,10 +11,13 @@ post "/auth/challenges/?" do
   status 201
   content_type "application/hal+json"
   headers \
-    "Location" => challenge.challenge_url
-  { :_links => {
-      :self => { :href => challenge.challenge_url }
-    },
-    :external_auth_url => challenge.twitter_url
-  }.to_json
+    "Location" => challenge.location
+  challenge.to_json
+end
+
+post "/auth/challenges/:challenge_id" do
+  client = TwitterClient.instance
+  challenge = client.get_challenge(params[:challenge_id])
+
+
 end

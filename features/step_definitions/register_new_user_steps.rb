@@ -4,6 +4,10 @@ Given(/^The OAuth Client is fake$/) do
   TwitterClient.instance.consumer = @fake_oauth_client
 end
 
+Given(/^The OAuth Client will return a valid User Response$/) do
+  @fake_oauth_client.response = FakeResponse.new(body: '{"id":16497772,"id_str":"16497772","name":"floriankrueger","screen_name":"xcuze","location":"Munich, Germany","description":"Software Developer & Enthusiast","url":"http:\/\/t.co\/cLR2xAhpp3","entities":{"url":{"urls":[{"url":"http:\/\/t.co\/cLR2xAhpp3","expanded_url":"http:\/\/about.me\/floriankrueger","display_url":"about.me\/floriankrueger","indices":[0,22]}]},"description":{"urls":[]}},"protected":false,"followers_count":99,"friends_count":139,"listed_count":8,"created_at":"Sun Sep 28 12:49:36 +0000 2008","favourites_count":116,"utc_offset":7200,"time_zone":"Berlin","geo_enabled":true,"verified":false,"statuses_count":955,"lang":"en","status":{"created_at":"Thu Sep 10 14:11:05 +0000 2015","id":641977194793828352,"id_str":"641977194793828352","text":"RT @MicroSFF: \"Okay Google,\" Cortana said, \"who was the antagonist of \'I am weasel\'?\"\n\"I are baboon.\" Google paused. \"Real mature, guys.\"\nS\u2026","source":"\u003ca href=\"http:\/\/twitter.com\" rel=\"nofollow\"\u003eTwitter Web Client\u003c\/a\u003e","truncated":false,"in_reply_to_status_id":null,"in_reply_to_status_id_str":null,"in_reply_to_user_id":null,"in_reply_to_user_id_str":null,"in_reply_to_screen_name":null,"geo":null,"coordinates":null,"place":null,"contributors":null,"retweeted_status":{"created_at":"Thu Sep 10 13:28:04 +0000 2015","id":641966370461233152,"id_str":"641966370461233152","text":"\"Okay Google,\" Cortana said, \"who was the antagonist of \'I am weasel\'?\"\n\"I are baboon.\" Google paused. \"Real mature, guys.\"\nSiri giggled.","source":"\u003ca href=\"http:\/\/www.hootsuite.com\" rel=\"nofollow\"\u003eHootsuite\u003c\/a\u003e","truncated":false,"in_reply_to_status_id":null,"in_reply_to_status_id_str":null,"in_reply_to_user_id":null,"in_reply_to_user_id_str":null,"in_reply_to_screen_name":null,"geo":null,"coordinates":null,"place":null,"contributors":null,"retweet_count":78,"favorite_count":94,"entities":{"hashtags":[],"symbols":[],"user_mentions":[],"urls":[]},"favorited":false,"retweeted":true,"lang":"en"},"retweet_count":78,"favorite_count":0,"entities":{"hashtags":[],"symbols":[],"user_mentions":[{"screen_name":"MicroSFF","name":"Micro SF\/F Fiction","id":1376608884,"id_str":"1376608884","indices":[3,12]}],"urls":[]},"favorited":false,"retweeted":true,"lang":"en"},"contributors_enabled":false,"is_translator":false,"is_translation_enabled":false,"profile_background_color":"131516","profile_background_image_url":"http:\/\/pbs.twimg.com\/profile_background_images\/378800000085326876\/a0f77b0807499a41bdfbe71032912af8.jpeg","profile_background_image_url_https":"https:\/\/pbs.twimg.com\/profile_background_images\/378800000085326876\/a0f77b0807499a41bdfbe71032912af8.jpeg","profile_background_tile":false,"profile_image_url":"http:\/\/pbs.twimg.com\/profile_images\/637326380418629632\/kQCnyVXR_normal.jpg","profile_image_url_https":"https:\/\/pbs.twimg.com\/profile_images\/637326380418629632\/kQCnyVXR_normal.jpg","profile_banner_url":"https:\/\/pbs.twimg.com\/profile_banners\/16497772\/1440785685","profile_link_color":"006699","profile_sidebar_border_color":"FFFFFF","profile_sidebar_fill_color":"EFEFEF","profile_text_color":"333333","profile_use_background_image":true,"has_extended_profile":false,"default_profile":false,"default_profile_image":false,"following":false,"follow_request_sent":false,"notifications":false}')
+end
+
 Given(/^The Redis Store is fake$/) do
   @fake_redis_store = FakeRedis.new()
   TwitterClient.instance.store = @fake_redis_store
@@ -101,12 +105,34 @@ Then(/^The Fake OAuth Client should have been called with the a PIN of ([a-zA-Z0
   expect(@fake_oauth_client.last_params[:oauth_verifier]).to eq(arg1)
 end
 
+Then(/^The Location Header should point to the User$/) do
+  screen_name = JSON.parse(@fake_oauth_client.response.body)['screen_name']
+  expect(last_response.headers['Location']).to eq("/users/#{screen_name}")
+end
+
 Then(/^A user account should have been created$/) do
   expect(User.count).to eq(1)
 end
 
+Then(/^The user account should contain all information from the response$/) do
+  response = JSON.parse(@fake_oauth_client.response.body)
+  screen_name = response['screen_name']
+  user = User.where(:screen_name => screen_name).first
+
+  expect(user).to_not be_nil
+  expect(user.name).to eq(response['name'])
+  expect(user.screen_name).to eq(response['screen_name'])
+  expect(user.location).to eq(response['location'])
+  expect(user.description).to eq(response['description'])
+  expect(user.profile_image_url).to eq(response['profile_image_url'])
+  expect(user.expanded_url).to eq(response['expanded_url'])
+  expect(user.domain).to eq('twitter')
+end
+
 Then(/^There is a link to the user$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+  screen_name = JSON.parse(@fake_oauth_client.response.body)['screen_name']
+  data = JSON.parse(last_response.body)
+  expect(data['_links']['user']['href']).to eq("/users/#{screen_name}")
 end
 
 Then(/^There is an session_token$/) do

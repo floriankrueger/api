@@ -78,7 +78,7 @@ class TwitterClient
     session = TwitterSession.create(token: token, secret: secret)
     encryption_info = encrypt_session(plain_store_format: session.to_store_format, master_key: ENV['SESSION_MASTER_KEY'])
     store.set(session.session_token, { :data => encryption_info[:data], :iv => encryption_info[:iv] }.to_json)
-    { :session_token => session.session_token, :session_secret => encryption_info[:key] }
+    { :session_token => session.session_token, :session_secret => encryption_info[:key], :session => session }
   end
 
   def get_session(session_token:, session_secret:)
@@ -108,6 +108,19 @@ class TwitterClient
       :key => utf8_encode(outer_key),
       :iv => utf8_encode(outer_iv)
     }
+  end
+
+  def fetch_user_info(session:)
+    unless session.is_a? TwitterSession
+      raise ArgumentError, "Invalid Session"
+    end
+
+    consumer = self.current_consumer()
+    access_token = OAuth::AccessToken.new(consumer, session.token, session.secret)
+
+    response = access_token.get('/1.1/account/verify_credentials.json')
+    user_info = JSON.parse(response.body)
+    User.create_or_update_with_twitter_info(user_info: user_info)
   end
 
   def utf8_encode(string)

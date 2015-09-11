@@ -11,9 +11,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150903052115) do
+ActiveRecord::Schema.define(version: 20150907133759) do
 
   create_table "events", force: :cascade do |t|
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.string   "name"
+    t.string   "screen_name"
+    t.string   "location"
+    t.string   "description"
+    t.string   "profile_image_url"
+    t.string   "expanded_url"
+    t.string   "domain"
+    t.string   "external_id"
   end
 
 end

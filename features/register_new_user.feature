@@ -52,7 +52,6 @@ Feature: Register New User
     And There should be an Error
     And The Error message should say "Insufficient Data. To fulfill a PIN Challenge you need to provide a {'pin':'<some_pin>'}"
 
-  @current_wip
   Scenario: Responding to a Twitter PIN Challenge
     Given The user isn't authenticated
     And The user has never logged in before

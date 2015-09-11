@@ -30,9 +30,9 @@ Then(/^There should be an Error$/) do
   expect(data['error']).not_to be_nil
 end
 
-Then(/^The Error message should say that a valid authentication method is needed$/) do
-  data = JSON.parse(last_response.body)
-  expect(data['error']['message']).to eq("Please supply a valid authentication method. Supported methods are: pin")
+Then(/^The Error message should say "([^"]*)"$/) do |arg1|
+data = JSON.parse(last_response.body)
+expect(data['error']['message']).to eq(arg1)
 end
 
 Then(/^The Fake OAuth Client should have been called with the PIN method$/) do
@@ -76,12 +76,29 @@ Given(/^There is a pending Twitter PIN Challenge$/) do
   expect(last_response.headers['Location']).to_not be_nil
 end
 
-When(/^The user sends a POST to the given challenge url with correct auth data$/) do
-  post last_response.headers['Location'], { "Content-Type" => "application/json" }, { "pin" => "123456" }
+Given(/^The Session Master Key is "([^"]*)"$/) do |arg1|
+  ENV['SESSION_MASTER_KEY'] = arg1
 end
 
-Then(/^An access token \(session\) should have been created$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+Given(/^There is no pending Twitter PIN Challenge for the key ([a-zA-Z0-9]+)$/) do |arg1|
+  expect(@fake_redis_store.get(arg1)).to be_nil
+end
+
+When(/^The user sends a POST to the challenge ([a-zA-Z0-9]+) with some auth data$/) do |arg1|
+  post "/auth/challenges/#{arg1}", { "pin" => "123456" }.to_json, { "Content-Type" => "application/json" }
+end
+
+When(/^The user sends a POST to the given challenge url with no auth data$/) do
+  post last_response.headers['Location'], {}.to_json, { "Content-Type" => "application/json" }
+end
+
+When(/^The user sends a POST to the given challenge url with a PIN of ([a-zA-Z0-9]+)$/) do |arg1|
+  post last_response.headers['Location'], { "pin" => arg1 }.to_json, { "Content-Type" => "application/json" }
+end
+
+Then(/^The Fake OAuth Client should have been called with the a PIN of ([a-zA-Z0-9]+)$/) do |arg1|
+  expect(@fake_oauth_client.last_params).to_not be_nil
+  expect(@fake_oauth_client.last_params[:oauth_verifier]).to eq(arg1)
 end
 
 Then(/^A user account should have been created$/) do
@@ -92,10 +109,18 @@ Then(/^There is a link to the user$/) do
   pending # Write code here that turns the phrase above into concrete actions
 end
 
-Then(/^There is an access_token$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^There is an session_token$/) do
+  data = JSON.parse(last_response.body)
+  expect(data['session_token']).to_not be_nil
 end
 
-Then(/^There is an access_secret$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^There is an session_secret$/) do
+  data = JSON.parse(last_response.body)
+  expect(data['session_secret']).to_not be_nil
+end
+
+Then(/^The access_token has been stored$/) do
+  data = JSON.parse(last_response.body)
+  session_token = data['session_token']
+  expect(@fake_redis_store.get(session_token)).to_not be_nil
 end

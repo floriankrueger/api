@@ -42,6 +42,10 @@ error ArgumentError do
   halt 400, { "Content-Type" => "application/json" }, error_from_sinatra_error
 end
 
+error NotFoundError do
+  halt 404, { "Content-Type" => "application/json" }, error_from_sinatra_error
+end
+
 error InternalServerError do
   halt 500, { 'Content-Type' => 'application/json' }, error_from_sinatra_error
 end

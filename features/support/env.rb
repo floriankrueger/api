@@ -16,6 +16,7 @@ Sinatra::Application.app_file = app_file
 
 require 'rspec/expectations'
 require 'rack/test'
+require 'pry'
 
 set :database_file, "config/database.yml"
 

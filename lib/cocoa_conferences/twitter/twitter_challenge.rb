@@ -3,7 +3,7 @@ require 'securerandom'
 
 class TwitterChallenge
 
-  attr_reader :challenge_token
+  attr_reader :challenge_token, :method, :twitter_token, :twitter_secret
 
   def self.create(method:, request_token:, challenge_token: SecureRandom.urlsafe_base64)
     TwitterChallenge.new(

@@ -1,6 +1,9 @@
 
 class FakeRedis
 
+  attr_reader :store
+  attr_reader :options
+
   def initialize()
     @store = {}
     @options = {}

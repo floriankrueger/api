@@ -76,13 +76,34 @@ class TwitterClient
     end
 
     session = TwitterSession.create(token: token, secret: secret)
+    puts "STORE FORMAT IN: #{session.to_store_format}"
     encryption_info = encrypt_session(plain_store_format: session.to_store_format, master_key: ENV['SESSION_MASTER_KEY'])
     store.set(session.session_token, { :data => encryption_info[:data], :iv => encryption_info[:iv] }.to_json)
     { :session_token => session.session_token, :session_secret => encryption_info[:key], :session => session }
   end
 
   def get_session(session_token:, session_secret:)
-    # TODO
+    store = self.current_store()
+    encrypted_session_info_raw = store.get(session_token)
+
+    unless encrypted_session_info_raw
+      raise AuthenticationFailed, "Invalid Session. Maybe it expired. Please login again."
+    end
+
+    encrypted_session_info = JSON.parse(encrypted_session_info_raw)
+
+    unless encrypted_session_info
+      raise AuthenticationFailed, "Invalid Session. Maybe it expired. Please login again."
+    end
+
+
+    decrypted_session_store_format = decrypt_session(
+      encrypted_store_format: encrypted_session_info['data'],
+      master_key: ENV['SESSION_MASTER_KEY'],
+      key: session_secret,
+      iv: encrypted_session_info['iv'])
+
+    TwitterSession.from_store_format(session_token: session_token, store_format: decrypted_session_store_format)
   end
 
   def encrypt_session(plain_store_format:, master_key:)
@@ -110,6 +131,29 @@ class TwitterClient
     }
   end
 
+  def decrypt_session(encrypted_store_format:, master_key:, key:, iv:)
+    begin
+      decipher = OpenSSL::Cipher::AES.new(256, :CBC)
+      decipher.decrypt
+      decipher.key = utf8_decode(key)
+      decipher.iv = utf8_decode(iv)
+
+      outer_encrypted = utf8_decode(encrypted_store_format)
+
+      inner_data_raw = decipher.update(outer_encrypted) + decipher.final
+      inner_data = JSON.parse(inner_data_raw)
+
+      decipher = OpenSSL::Cipher::AES.new(256, :CBC)
+      decipher.decrypt
+      decipher.key = master_key
+      decipher.iv = utf8_decode(inner_data['iv'])
+
+      decipher.update(utf8_decode(inner_data['data'])) + decipher.final
+    rescue Exception => e
+      raise AuthenticationFailed, "Invalid Session. Maybe it expired. Please login again."
+    end
+  end
+
   def fetch_user_info(session:)
     unless session.is_a? TwitterSession
       raise ArgumentError, "Invalid Session"
@@ -129,10 +173,6 @@ class TwitterClient
 
   def utf8_decode(string)
     Base64.decode64(string).encode('ascii-8bit')
-  end
-
-  def decrypt_session(encrypted_store_format:, master_key:, key:, iv:)
-
   end
 
   def current_consumer()

@@ -15,6 +15,17 @@ Given(/^The user is authenticated with missing secret$/) do
   header "Authentication", "CC-AUTH token=\"not_a_token\", bar=\"not_a_secret\""
 end
 
+Given(/^The user is authenticated with invalid secret$/) do
+  token = @current_session_info[:session_token]
+  header "Authentication", "CC-AUTH token=\"#{token}\", secret=\"not_a_secret\""
+end
+
+Given(/^The user is authenticated$/) do
+  token = @current_session_info[:session_token]
+  secret = @current_session_info[:session_secret]
+  header "Authentication", "CC-AUTH token=\"#{token}\", secret=\"#{secret}\""
+end
+
 Given(/^The user has already logged in before$/) do
   User.create(
     :name => "floriankrueger",
@@ -27,6 +38,11 @@ Given(/^The user has already logged in before$/) do
     :domain => 'twitter'
   )
   expect(User.count).to eq(1)
+end
+
+Given(/^The user is logged in$/) do
+  client = TwitterClient.instance
+  @current_session_info = client.create_session(token: "oauth_token", secret: "oauth_secret")
 end
 
 Then(/^No new user account should have been created$/) do

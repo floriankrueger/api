@@ -46,7 +46,6 @@ Feature: Login
     And There should be an Error
     And The Error message should say "Secret is missing."
 
-  @wip
   Scenario: An authorized GET on the root with invalid token and secret
     Given The user has already logged in before
     And The OAuth Client is fake
@@ -56,13 +55,30 @@ Feature: Login
     And The Session Master Key is "*ky7o799n7(F62+gXVm+H#Z}6w*b#cKVBJk4Z6B}v[xYRCcMiM"
     When The user fetches root
     Then The HTTP Status Code should be 401
+    And There should be an Error
+    And The Error message should say "Invalid Session. Maybe it expired. Please login again."
 
-  #Scenario: An authorized GET on the root
-  #  Given The user has already logged in before
-  #  And The OAuth Client is fake
-  #  And The OAuth Client will return a valid User Response
-  #  And The Redis Store is fake
-  #  And The user is authenticated
-  #  And The Session Master Key is "*ky7o799n7(F62+gXVm+H#Z}6w*b#cKVBJk4Z6B}v[xYRCcMiM"
-  #  When The user fetches root
-  #  Then The HTTP Status Code should be 200
+  Scenario: An authorized GET on the root with invalid secret
+    Given The user has already logged in before
+    And The OAuth Client is fake
+    And The OAuth Client will return a valid User Response
+    And The Redis Store is fake
+    And The Session Master Key is "*ky7o799n7(F62+gXVm+H#Z}6w*b#cKVBJk4Z6B}v[xYRCcMiM"
+    And The user is logged in
+    And The user is authenticated with invalid secret
+    When The user fetches root
+    Then The HTTP Status Code should be 401
+    And There should be an Error
+    And The Error message should say "Invalid Session. Maybe it expired. Please login again."
+
+  @wip
+  Scenario: An authorized GET on the root
+    Given The user has already logged in before
+    And The OAuth Client is fake
+    And The OAuth Client will return a valid User Response
+    And The Redis Store is fake
+    And The Session Master Key is "*ky7o799n7(F62+gXVm+H#Z}6w*b#cKVBJk4Z6B}v[xYRCcMiM"
+    And The user is logged in
+    And The user is authenticated
+    When The user fetches root
+    Then The HTTP Status Code should be 200

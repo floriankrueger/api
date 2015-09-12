@@ -6,7 +6,7 @@ class AuthHeader
   VALID_SCHEMES = ['CC-AUTH']
 
   def initialize(header_string:)
-    elements = header_string.split(' ').collect { |e| e.strip }
+    elements = header_string.split(/ /).collect { |e| e.strip }
     @scheme = elements.shift
 
     unless VALID_SCHEMES.include? @scheme
@@ -15,11 +15,15 @@ class AuthHeader
 
     args = {}
     elements.each do |element|
-      match = element.match(/([a-z]+)\=\"(.+)\",?/)
+      match = element.match(/([a-z]+)\=\"(.+\n?)\",?/)
+      puts "ELEMENT => #{element}"
+      puts "MATCH => #{match}"
       if match
         args[match[1]] = match[2]
       end
     end
+
+    puts "args = #{args}"
 
     @token = args['token']
     @secret = args['secret']

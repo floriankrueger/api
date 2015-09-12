@@ -20,7 +20,8 @@ set :show_exceptions, :after_handler
 before do
   if env['HTTP_AUTHENTICATION']
     auth = AuthHeader.new(header_string: env['HTTP_AUTHENTICATION'])
-    puts "AUTH: #{auth}"
+    client = TwitterClient.instance
+    @session = client.get_session(session_token: auth.token, session_secret: auth.secret)
   end
 end
 

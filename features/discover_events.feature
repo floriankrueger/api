@@ -6,7 +6,7 @@ Feature: Discover Events
 
   Scenario: Discover the possibilities
     Given The user isn't authenticated
-    When He fetches the root via GET
+    When The user fetches root
     Then The HTTP Status Code should be 200
     And There is a _links Hash with 6 elements
     And There is a link to the events with an href of /events

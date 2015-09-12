@@ -3,8 +3,7 @@ Feature: Login
 
   Users can login to cocoaconferences.org via their twitter accounts.
 
-  @current_wip
-  Scenario: Responding to a Twitter PIN Challenge
+  Scenario: Fresh Login using the Twitter PIN Challenge
     Given The user isn't authenticated
     And The OAuth Client is fake
     And The OAuth Client will return a valid User Response
@@ -23,3 +22,47 @@ Feature: Login
     And There is an session_token
     And There is an session_secret
     And The access_token has been stored
+
+  Scenario: An authorized GET on the root with invalid authentication header scheme
+    Given The user is authenticated with invalid authentication header scheme
+    And The Session Master Key is "*ky7o799n7(F62+gXVm+H#Z}6w*b#cKVBJk4Z6B}v[xYRCcMiM"
+    When The user fetches root
+    Then The HTTP Status Code should be 401
+    And There should be an Error
+    And The Error message should say "Invalid authentication scheme."
+
+  Scenario: An authorized GET on the root with missing token
+    Given The user is authenticated with missing token
+    And The Session Master Key is "*ky7o799n7(F62+gXVm+H#Z}6w*b#cKVBJk4Z6B}v[xYRCcMiM"
+    When The user fetches root
+    Then The HTTP Status Code should be 401
+    And There should be an Error
+    And The Error message should say "Token is missing."
+
+  Scenario: An authorized GET on the root with missing secret
+    Given The user is authenticated with missing secret
+    When The user fetches root
+    Then The HTTP Status Code should be 401
+    And There should be an Error
+    And The Error message should say "Secret is missing."
+
+  @wip
+  Scenario: An authorized GET on the root with invalid token and secret
+    Given The user has already logged in before
+    And The OAuth Client is fake
+    And The OAuth Client will return a valid User Response
+    And The Redis Store is fake
+    And The user is authenticated with invalid token and secret
+    And The Session Master Key is "*ky7o799n7(F62+gXVm+H#Z}6w*b#cKVBJk4Z6B}v[xYRCcMiM"
+    When The user fetches root
+    Then The HTTP Status Code should be 401
+
+  #Scenario: An authorized GET on the root
+  #  Given The user has already logged in before
+  #  And The OAuth Client is fake
+  #  And The OAuth Client will return a valid User Response
+  #  And The Redis Store is fake
+  #  And The user is authenticated
+  #  And The Session Master Key is "*ky7o799n7(F62+gXVm+H#Z}6w*b#cKVBJk4Z6B}v[xYRCcMiM"
+  #  When The user fetches root
+  #  Then The HTTP Status Code should be 200

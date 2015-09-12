@@ -17,6 +17,13 @@ end
 
 set :show_exceptions, :after_handler
 
+before do
+  if env['HTTP_AUTHENTICATION']
+    auth = AuthHeader.new(header_string: env['HTTP_AUTHENTICATION'])
+    puts "AUTH: #{auth}"
+  end
+end
+
 get "/?" do
   content_type "application/hal+json"
   { :_links => {
@@ -44,6 +51,10 @@ end
 
 error NotFoundError do
   halt 404, { "Content-Type" => "application/json" }, error_from_sinatra_error
+end
+
+error AuthenticationFailed do
+  halt 401, { "Content-Type" => "application/json" }, error_from_sinatra_error
 end
 
 error InternalServerError do

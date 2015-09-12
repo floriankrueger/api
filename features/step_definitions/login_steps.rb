@@ -1,4 +1,20 @@
 
+Given(/^The user is authenticated with invalid token and secret$/) do
+  header "Authentication", "CC-AUTH token=\"not_a_token\", secret=\"not_a_secret\""
+end
+
+Given(/^The user is authenticated with invalid authentication header scheme$/) do
+  header "Authentication", "WHATEVER foo=\"bar\""
+end
+
+Given(/^The user is authenticated with missing token$/) do
+  header "Authentication", "CC-AUTH foo=\"not_a_token\", secret=\"not_a_secret\""
+end
+
+Given(/^The user is authenticated with missing secret$/) do
+  header "Authentication", "CC-AUTH token=\"not_a_token\", bar=\"not_a_secret\""
+end
+
 Given(/^The user has already logged in before$/) do
   User.create(
     :name => "floriankrueger",

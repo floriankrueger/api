@@ -1,9 +1,9 @@
 
 Given(/^The user isn't authenticated$/) do
-header "Authentication", nil
+  header "Authentication", nil
 end
 
-When(/^He fetches the root via GET$/) do
+When(/^The user fetches root$/) do
   get "/"
 end
 

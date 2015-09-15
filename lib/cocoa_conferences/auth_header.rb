@@ -16,14 +16,10 @@ class AuthHeader
     args = {}
     elements.each do |element|
       match = element.match(/([a-z]+)\=\"(.+\n?)\",?/)
-      puts "ELEMENT => #{element}"
-      puts "MATCH => #{match}"
       if match
         args[match[1]] = match[2]
       end
     end
-
-    puts "args = #{args}"
 
     @token = args['token']
     @secret = args['secret']

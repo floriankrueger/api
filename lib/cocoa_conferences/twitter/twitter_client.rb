@@ -76,7 +76,6 @@ class TwitterClient
     end
 
     session = TwitterSession.create(token: token, secret: secret)
-    puts "STORE FORMAT IN: #{session.to_store_format}"
     encryption_info = encrypt_session(plain_store_format: session.to_store_format, master_key: ENV['SESSION_MASTER_KEY'])
     store.set(session.session_token, { :data => encryption_info[:data], :iv => encryption_info[:iv] }.to_json)
     { :session_token => session.session_token, :session_secret => encryption_info[:key], :session => session }
@@ -95,7 +94,6 @@ class TwitterClient
     unless encrypted_session_info
       raise AuthenticationFailed, "Invalid Session. Maybe it expired. Please login again."
     end
-
 
     decrypted_session_store_format = decrypt_session(
       encrypted_store_format: encrypted_session_info['data'],

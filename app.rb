@@ -39,6 +39,7 @@ get "/?" do
 end
 
 require './app/auth'
+require './app/events'
 
 # Errors
 
@@ -56,6 +57,18 @@ end
 
 error AuthenticationFailed do
   halt 401, { "Content-Type" => "application/json" }, error_from_sinatra_error
+end
+
+error LocationValidationError do
+  halt 400, { "Content-Type" => "application/json" }, error_from_sinatra_error
+end
+
+error ConferenceValidationError do
+  halt 400, { "Content-Type" => "application/json" }, error_from_sinatra_error
+end
+
+error EventValidationError do
+  halt 400, { "Content-Type" => "application/json" }, error_from_sinatra_error
 end
 
 error InternalServerError do

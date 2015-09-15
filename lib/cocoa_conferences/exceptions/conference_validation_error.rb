@@ -1,0 +1,3 @@
+
+class ConferenceValidationError < Exception
+end

@@ -71,7 +71,6 @@ Feature: Login
     And There should be an Error
     And The Error message should say "Invalid Session. Maybe it expired. Please login again."
 
-  @wip
   Scenario: An authorized GET on the root
     Given The user has already logged in before
     And The OAuth Client is fake

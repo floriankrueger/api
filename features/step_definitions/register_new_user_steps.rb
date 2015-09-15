@@ -1,4 +1,37 @@
 
+Given(/^We have everything in place for an authenticated user$/) do
+  # From "The user has already logged in before"
+  User.create(
+    :name => "floriankrueger",
+    :screen_name => "xcuze",
+    :location => "somewhere over the rainbow",
+    :description => "this is a work in progress",
+    :profile_image_url => "http://example.org",
+    :expanded_url => "http://geocities.com/xcuze",
+    :external_id => "16497772",
+    :domain => 'twitter'
+  )
+  expect(User.count).to eq(1)
+
+  # From "The OAuth Client is fake"
+  @fake_oauth_client = FakeOAuth.new()
+  TwitterClient.instance.consumer = @fake_oauth_client
+
+  # From "The OAuth Client will return a valid User Response"
+  @fake_oauth_client.response = FakeResponse.new(body: '{"id":16497772,"id_str":"16497772","name":"floriankrueger","screen_name":"xcuze","location":"Munich, Germany","description":"Software Developer & Enthusiast","url":"http:\/\/t.co\/cLR2xAhpp3","entities":{"url":{"urls":[{"url":"http:\/\/t.co\/cLR2xAhpp3","expanded_url":"http:\/\/about.me\/floriankrueger","display_url":"about.me\/floriankrueger","indices":[0,22]}]},"description":{"urls":[]}},"protected":false,"followers_count":99,"friends_count":139,"listed_count":8,"created_at":"Sun Sep 28 12:49:36 +0000 2008","favourites_count":116,"utc_offset":7200,"time_zone":"Berlin","geo_enabled":true,"verified":false,"statuses_count":955,"lang":"en","status":{"created_at":"Thu Sep 10 14:11:05 +0000 2015","id":641977194793828352,"id_str":"641977194793828352","text":"RT @MicroSFF: \"Okay Google,\" Cortana said, \"who was the antagonist of \'I am weasel\'?\"\n\"I are baboon.\" Google paused. \"Real mature, guys.\"\nS\u2026","source":"\u003ca href=\"http:\/\/twitter.com\" rel=\"nofollow\"\u003eTwitter Web Client\u003c\/a\u003e","truncated":false,"in_reply_to_status_id":null,"in_reply_to_status_id_str":null,"in_reply_to_user_id":null,"in_reply_to_user_id_str":null,"in_reply_to_screen_name":null,"geo":null,"coordinates":null,"place":null,"contributors":null,"retweeted_status":{"created_at":"Thu Sep 10 13:28:04 +0000 2015","id":641966370461233152,"id_str":"641966370461233152","text":"\"Okay Google,\" Cortana said, \"who was the antagonist of \'I am weasel\'?\"\n\"I are baboon.\" Google paused. \"Real mature, guys.\"\nSiri giggled.","source":"\u003ca href=\"http:\/\/www.hootsuite.com\" rel=\"nofollow\"\u003eHootsuite\u003c\/a\u003e","truncated":false,"in_reply_to_status_id":null,"in_reply_to_status_id_str":null,"in_reply_to_user_id":null,"in_reply_to_user_id_str":null,"in_reply_to_screen_name":null,"geo":null,"coordinates":null,"place":null,"contributors":null,"retweet_count":78,"favorite_count":94,"entities":{"hashtags":[],"symbols":[],"user_mentions":[],"urls":[]},"favorited":false,"retweeted":true,"lang":"en"},"retweet_count":78,"favorite_count":0,"entities":{"hashtags":[],"symbols":[],"user_mentions":[{"screen_name":"MicroSFF","name":"Micro SF\/F Fiction","id":1376608884,"id_str":"1376608884","indices":[3,12]}],"urls":[]},"favorited":false,"retweeted":true,"lang":"en"},"contributors_enabled":false,"is_translator":false,"is_translation_enabled":false,"profile_background_color":"131516","profile_background_image_url":"http:\/\/pbs.twimg.com\/profile_background_images\/378800000085326876\/a0f77b0807499a41bdfbe71032912af8.jpeg","profile_background_image_url_https":"https:\/\/pbs.twimg.com\/profile_background_images\/378800000085326876\/a0f77b0807499a41bdfbe71032912af8.jpeg","profile_background_tile":false,"profile_image_url":"http:\/\/pbs.twimg.com\/profile_images\/637326380418629632\/kQCnyVXR_normal.jpg","profile_image_url_https":"https:\/\/pbs.twimg.com\/profile_images\/637326380418629632\/kQCnyVXR_normal.jpg","profile_banner_url":"https:\/\/pbs.twimg.com\/profile_banners\/16497772\/1440785685","profile_link_color":"006699","profile_sidebar_border_color":"FFFFFF","profile_sidebar_fill_color":"EFEFEF","profile_text_color":"333333","profile_use_background_image":true,"has_extended_profile":false,"default_profile":false,"default_profile_image":false,"following":false,"follow_request_sent":false,"notifications":false}')
+
+  # From "The Redis Store is fake"
+  @fake_redis_store = FakeRedis.new()
+  TwitterClient.instance.store = @fake_redis_store
+
+  # From "The Session Master Key is ..."
+  ENV['SESSION_MASTER_KEY'] = "*ky7o799n7(F62+gXVm+H#Z}6w*b#cKVBJk4Z6B}v[xYRCcMiM"
+
+  # From "The user is logged in"
+  client = TwitterClient.instance
+  @current_session_info = client.create_session(token: "oauth_token", secret: "oauth_secret")
+end
+
 Given(/^The OAuth Client is fake$/) do
   @fake_oauth_client = FakeOAuth.new()
   TwitterClient.instance.consumer = @fake_oauth_client
@@ -35,8 +68,8 @@ Then(/^There should be an Error$/) do
 end
 
 Then(/^The Error message should say "([^"]*)"$/) do |arg1|
-data = JSON.parse(last_response.body)
-expect(data['error']['message']).to eq(arg1)
+  data = JSON.parse(last_response.body)
+  expect(data['error']['message']).to eq(arg1)
 end
 
 Then(/^The Fake OAuth Client should have been called with the PIN method$/) do

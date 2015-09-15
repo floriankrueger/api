@@ -1,0 +1,3 @@
+
+class LocationValidationError < Exception
+end

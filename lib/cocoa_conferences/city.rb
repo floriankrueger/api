@@ -23,6 +23,6 @@
     end
 
     def capitalize_name
-      @name.capitalize!
+      name.capitalize!
     end
   end

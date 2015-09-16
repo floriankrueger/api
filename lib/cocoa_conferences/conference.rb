@@ -16,6 +16,6 @@
         end
       end
 
-      country
+      conference
     end
   end

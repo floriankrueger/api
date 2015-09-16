@@ -20,12 +20,39 @@ post "/events/?" do
   # find or create the conference
   conference_data = body['cc:conference']
   raise EventValidationError, "Provide conference information!" unless conference_data
-  conference = Conference.find_by_name_or_create(name: conference_data['code'])
+  conference = Conference.find_by_name_or_create(name: conference_data['name'])
+
+  # create the event
+  event = Event.new(
+    :start => body['start'],
+    :end => body['end'],
+    :web => body['web']
+  )
+  raise EventValidationError, "Invalid event information!" unless event.valid?
+
+  # save the data
+  if country.new_record?
+    country.continent = continent
+    country.save
+  end
+
+  if city.new_record?
+    city.country = country
+    city.save
+  end
+
+  if conference.new_record?
+    conference.save
+  end
+
+  event.conference = conference
+  event.city = city
+  event.save
 
   status 201
   content_type "application/hal+json"
 
-  event_location = "/events/1"
+  event_location = "/events/#{event.id}"
 
   headers \
     "Location" => event_location

@@ -91,14 +91,52 @@ Feature: Create Events
     And The Error message should say "Invalid conference. Please provide the conferences’ name."
     And There should be 0 events in the database
 
-  #Scenario: Creating a new event with a new country and a new city
-  #  Given We have everything in place for an authenticated user
-  #  And The user is authenticated
-  #  And There are no events in the database
-  #  And There are no countries in the database
-  #  And There are no cities in the database
-  #  And The continents are setup
-  #  When The user sends a POST to the events collection with a valid body
-  #  Then The HTTP Status Code should be 201
-  #  And The Location Header should point to the Event
-  #  And There should be 1 event in the database
+  Scenario: Creating a new event without a start date
+    Given We have everything in place for an authenticated user
+    And The user is authenticated
+    And There are no events in the database
+    And The continents are setup
+    When The user sends a POST to the events collection without a start date
+    Then The HTTP Status Code should be 400
+    And There should be an Error
+    And The Error message should say "Invalid event information!"
+    And There should be 0 events in the database
+
+  Scenario: Creating a new event without an end date
+    Given We have everything in place for an authenticated user
+    And The user is authenticated
+    And There are no events in the database
+    And The continents are setup
+    When The user sends a POST to the events collection without an end date
+    Then The HTTP Status Code should be 400
+    And There should be an Error
+    And The Error message should say "Invalid event information!"
+    And There should be 0 events in the database
+
+  Scenario: Creating a new event without website information
+    Given We have everything in place for an authenticated user
+    And The user is authenticated
+    And There are no events in the database
+    And The continents are setup
+    When The user sends a POST to the events collection without website information
+    Then The HTTP Status Code should be 400
+    And There should be an Error
+    And The Error message should say "Invalid event information!"
+    And There should be 0 events in the database
+
+  @wip
+  Scenario: Creating a new event with a new country, new city and new conference
+    Given We have everything in place for an authenticated user
+    And The user is authenticated
+    And There are no events in the database
+    And There are no countries in the database
+    And There are no cities in the database
+    And There are no conferences in the database
+    And The continents are setup
+    When The user sends a POST to the events collection with a valid body
+    Then The HTTP Status Code should be 201
+    And The Location Header should point to the Event
+    And There should be 1 country in the database
+    And There should be 1 city in the database
+    And There should be 1 event in the database
+    And There should be 1 conference in the database

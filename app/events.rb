@@ -1,5 +1,9 @@
 
 post "/events/?" do
+  unless @session
+    raise AuthenticationFailed, "Please log in to create Events"
+  end
+
   body = JSON.parse request.body.read
 
   # find the continent

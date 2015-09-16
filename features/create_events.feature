@@ -3,6 +3,22 @@ Feature: Create Events
 
   Every authenticated user can create new events.
 
+  Scenario: Try to create an event without authentication
+    Given We have everything in place for an authenticated user
+    And The user isn't authenticated
+    And There are no events in the database
+    And There are no countries in the database
+    And There are no cities in the database
+    And There are no conferences in the database
+    And The continents are setup
+    When The user sends a POST to the events collection with a valid body
+    Then The HTTP Status Code should be 401
+    And The Location Header should be empty
+    And There should be 0 countries in the database
+    And There should be 0 cities in the database
+    And There should be 0 events in the database
+    And There should be 0 conferences in the database
+
   Scenario: Creating a new event without continent information
     Given We have everything in place for an authenticated user
     And The user is authenticated

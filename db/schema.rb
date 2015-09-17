@@ -51,8 +51,13 @@ ActiveRecord::Schema.define(version: 20150915133930) do
   add_index "countries", ["continent_id"], name: "index_countries_on_continent_id"
 
   create_table "events", force: :cascade do |t|
-    t.integer "conference_id"
-    t.integer "city_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.datetime "start"
+    t.datetime "end"
+    t.string   "web"
+    t.integer  "conference_id"
+    t.integer  "city_id"
   end
 
   add_index "events", ["city_id"], name: "index_events_on_city_id"

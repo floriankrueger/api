@@ -1,4 +1,48 @@
 
+get "/events/?" do
+  events = Event.all.order(start: :asc).collect do |event|
+    {
+      :_links => { :self => { :href => "/events/#{event.id}" } },
+      :start => event.start.iso8601(3),
+      :end => event.end.iso8601(3),
+      :web => event.web,
+      :_embedded => {
+        "cc:conference" => {
+          :_links => {
+            :self => { :href => "/conferences/#{event.conference.id}" },
+            "cc:event" => { :href => "/conferences/#{event.conference.id}/events" }
+          },
+          :name => event.conference.name
+        }
+      },
+      "cc:city" => {
+        :href => "/cities/#{event.city.id}",
+        :code => event.city.code,
+        :name => event.city.name
+      },
+      "cc:country" => {
+        :href => "/countries/#{event.city.country.id}",
+        :code => event.city.country.code,
+        :name => event.city.country.name
+      },
+      "cc:continent" => {
+        :href => "/continents/#{event.city.country.continent.id}",
+        :code => event.city.country.continent.code,
+        :name => event.city.country.continent.name
+      }
+    }
+  end
+
+  status 200
+  content_type "application/hal+json"
+  {
+    :_links => { "self" => { "href" => "/events" } },
+    :_embedded => {
+      "cc:event" => events
+    }
+  }.to_json
+end
+
 post "/events/?" do
   unless @session
     raise AuthenticationFailed, "Please log in to create Events"

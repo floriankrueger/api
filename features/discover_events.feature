@@ -15,3 +15,31 @@ Feature: Discover Events
     And There is a link to the countries with an href of /countries
     And There is a link to the continents with an href of /continents
     And There is a link to the authentication with an href of /auth
+
+  Scenario: Generally fetching events
+    Given The user isn't authenticated
+    And There are 2 events in the database
+    When The user sends a GET to /events
+    Then The HTTP Status Code should be 200
+    And There is a _links Hash with 1 element
+    And There is a link to self with an href of /events
+    And There is an _embedded Hash with 1 element
+    And There is an cc:event List in the _embedded Hash
+    And There is are 2 elements in the cc:event list
+    And Every item in the list is a valid event
+
+  @wip
+  Scenario: Fetching events
+    Given The user isn't authenticated
+    And The NSScotland 2015 event is in the database
+    And The NSSpain 2015 event is in the database
+    And The iOS Dev UK 2015 event is in the database
+    And The iOSCon 2015 event is in the database
+    When The user sends a GET to /events
+    Then The HTTP Status Code should be 200
+    And There is an cc:event List in the _embedded Hash
+    And There is are 4 elements in the cc:event list
+    And The first event should be iOSCon 2015
+    And The second event should be iOS Dev UK 2015
+    And The third event should be NSSpain 2015
+    And The fourth event should be NSScotland 2015

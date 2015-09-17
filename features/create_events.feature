@@ -140,7 +140,6 @@ Feature: Create Events
     And The Error message should say "Invalid event information!"
     And There should be 0 events in the database
 
-  @wip
   Scenario: Creating a new event with a new country, new city and new conference
     Given We have everything in place for an authenticated user
     And The user is authenticated

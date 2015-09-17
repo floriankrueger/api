@@ -28,7 +28,6 @@ Feature: Discover Events
     And There is are 2 elements in the cc:event list
     And Every item in the list is a valid event
 
-  @wip
   Scenario: Fetching events
     Given The user isn't authenticated
     And The NSScotland 2015 event is in the database
@@ -43,3 +42,18 @@ Feature: Discover Events
     And The second event should be iOS Dev UK 2015
     And The third event should be NSSpain 2015
     And The fourth event should be NSScotland 2015
+
+  Scenario: Fetch a specific event
+    Given The user isn't authenticated
+    And The NSScotland 2015 event is in the database
+    And The NSSpain 2015 event is in the database
+    When The user fetches NSSpain 2015 event by ID
+    Then The HTTP Status Code should be 200
+    And The delivered event should be the NSSpain 2015
+
+  @wip
+  Scenario: Fetch a specific event that doesn't exist
+    Given The user isn't authenticated
+    And There are no events in the database
+    When The user fetches an event with some ID
+    Then The HTTP Status Code should be 404

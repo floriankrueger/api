@@ -243,3 +243,27 @@ Then(/^Every item in the list is a valid event$/) do
     expect(continent["name"]).to be_a(String)
   end
 end
+
+When(/^The user fetches NSSpain 2015 event by ID$/) do
+  # fetch the actual data from database
+  nsspain = Conference.where(:name => "NSSpain").first
+  nsspain_2015 = nsspain.events.first
+
+  get "/events/#{nsspain_2015.id}"
+end
+
+When(/^The user fetches an event with some ID$/) do
+  get "/events/0"
+end
+
+Then(/^The delivered event should be the NSSpain 2015$/) do
+  # fetch the actual data from database
+  nsspain = Conference.where(:name => "NSSpain").first
+  nsspain_2015 = nsspain.events.first
+
+  # extract the actual event
+  data = JSON.parse(last_response.body)
+
+  # make sure the data is correct
+  check_event(data, nsspain, nsspain_2015)
+end

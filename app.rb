@@ -47,6 +47,10 @@ def error_from_sinatra_error
   { :error => { :message => env['sinatra.error'].message } }.to_json
 end
 
+error ActiveRecord::RecordNotFound do
+  halt 404
+end
+
 error ArgumentError do
   halt 400, { "Content-Type" => "application/json" }, error_from_sinatra_error
 end

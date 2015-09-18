@@ -79,13 +79,7 @@ post "/events/?" do
   status 201
   content_type "application/hal+json"
 
-  event_location = "/events/#{event.id}"
-
   headers \
-    "Location" => event_location
-  {
-    "_links" => {
-        "self" => { "href": event_location }
-    }
-  }.to_json
+    "Location" => event.href
+  event.embedded_format.to_json
 end

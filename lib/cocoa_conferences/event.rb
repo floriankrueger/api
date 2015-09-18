@@ -5,9 +5,13 @@
 
     validates :start, :end, :web, presence: true
 
+    def href
+      "/events/#{self.id}"
+    end
+
     def embedded_format
       {
-        :_links => { :self => { :href => "/events/#{self.id}" } },
+        :_links => { :self => { :href => self.href } },
         :start => self.start.iso8601(3),
         :end => self.end.iso8601(3),
         :web => self.web,

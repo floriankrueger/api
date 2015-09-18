@@ -8,6 +8,7 @@ class LocationsEventdataAndConferences < ActiveRecord::Migration
     create_table :conferences do |t|
       t.timestamps null: false
       t.string :name
+      t.string :web, null: true
     end
 
     create_table :continents do |t|

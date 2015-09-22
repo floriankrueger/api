@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(version: 20150915133930) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string   "name"
+    t.string   "web"
   end
 
   create_table "continents", force: :cascade do |t|

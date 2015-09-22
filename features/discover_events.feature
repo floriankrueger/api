@@ -18,7 +18,7 @@ Feature: Discover Events
 
   Scenario: Generally fetching events
     Given The user isn't authenticated
-    And There are 2 events in the database
+    And There are 2 events of the same conference in the database
     When The user sends a GET to /events
     Then The HTTP Status Code should be 200
     And There is a _links Hash with 1 element
@@ -51,7 +51,6 @@ Feature: Discover Events
     Then The HTTP Status Code should be 200
     And The delivered event should be the NSSpain 2015
 
-  @wip
   Scenario: Fetch a specific event that doesn't exist
     Given The user isn't authenticated
     And There are no events in the database

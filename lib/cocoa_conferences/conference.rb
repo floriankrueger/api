@@ -18,4 +18,29 @@
 
       conference
     end
+
+    def href
+      "/conferences/#{self.id}"
+    end
+
+    def href_events
+      "#{self.href}/events"
+    end
+
+    def embedded_format
+      hash =
+      {
+        :_links => {
+          :self =>      { :href => self.href },
+          "cc:event" => { :href => self.href_events }
+        },
+        :name => self.name
+      }
+
+      if self.web
+        hash[:web] = self.web
+      end
+
+      hash
+    end
   end

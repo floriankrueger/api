@@ -3,11 +3,11 @@ Given(/^The user isn't authenticated$/) do
   header "Authentication", nil
 end
 
-Given(/^There are (\d+) events in the database$/) do |arg1|
+Given(/^There are (\d+) events of the same conference in the database$/) do |arg1|
   europe = Continent.create(:code => "eu", :name => "Europe")
   united_kingdom = Country.create(:code => "gb", :name => "United Kingdom", :continent => europe)
   london = City.create(:code => "gblon", :name => "London", :country => united_kingdom)
-  ioscon = Conference.create(:name => "iOSCon")
+  ioscon = Conference.create(:name => "iOSCon", :web => "http://ioscon.com/")
 
   arg1.to_i.times do
     Event.create(

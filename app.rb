@@ -5,15 +5,10 @@
 # interact with organisers and attendees.
 #
 
-require 'bundler'
-Bundler.require
-
-require 'sinatra'
 require 'json'
+require 'sinatra'
 
-unless ENV['RACK_ENV'] == 'test'
-  set :database_file, "./config/database.yml"
-end
+require './config/environments'
 
 set :show_exceptions, :after_handler
 

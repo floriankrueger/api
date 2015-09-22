@@ -1,5 +1,6 @@
 
 require 'openssl'
+require 'redis'
 
 class TwitterClient
   include Singleton

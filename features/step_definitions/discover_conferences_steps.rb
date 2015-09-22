@@ -136,3 +136,23 @@ Then(/^The fourth conference should be NSScotland$/) do
   # make sure the data is correct
   check_conference(conference, nsscotland)
 end
+
+When(/^The user fetches NSSpain conference by ID$/) do
+  nsspain = Conference.where(:name => "NSSpain").first
+  get "/conferences/#{nsspain.id}"
+end
+
+Then(/^The delivered conference should be the NSSpain$/) do
+  # fetch the actual data from database
+  nsspain = Conference.where(:name => "NSSpain").first
+
+  # extract the actual conference
+  conference = JSON.parse(last_response.body)
+
+  # make sure the data is correct
+  check_conference(conference, nsspain)
+end
+
+When(/^The user fetches a conference with some ID$/) do
+  get "/conferences/0"
+end

@@ -39,3 +39,19 @@ Feature: Discover Conferences
     And The second conference should be iOS Dev UK
     And The third conference should be NSSpain
     And The fourth conference should be NSScotland
+
+  @wip
+  Scenario: Fetch a specific event
+    Given The user isn't authenticated
+    And The NSScotland 2015 event is in the database
+    And The NSSpain 2015 event is in the database
+    When The user fetches NSSpain conference by ID
+    Then The HTTP Status Code should be 200
+    And The delivered conference should be the NSSpain
+
+  @wip
+  Scenario: Fetch a specific event that doesn't exist
+    Given The user isn't authenticated
+    And There are no events in the database
+    When The user fetches a conference with some ID
+    Then The HTTP Status Code should be 404

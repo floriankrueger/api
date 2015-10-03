@@ -161,3 +161,7 @@ end
 When(/^The user fetches a conference with some ID$/) do
   get "/conferences/0"
 end
+
+When(/^The user fetches the events for some conference$/) do
+  get "/conferences/0/events"
+end

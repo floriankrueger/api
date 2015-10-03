@@ -53,7 +53,7 @@ Feature: Discover Conferences
     Then The HTTP Status Code should be 404
 
   @wip
-  Scenario: Fetch events for a conference that doesn't exist
+  Scenario: Fetch events for a conference
     Given The user isn't authenticated
     And The NSSpain 2015 event is in the database
     And The NSSpain 2014 event is in the database
@@ -67,3 +67,10 @@ Feature: Discover Conferences
     And Every item in the list is a valid event
     And The first event should be NSSpain 2015
     And The second event should be NSSpain 2014
+
+  @wip
+  Scenario: Fetch events for a conference that doesn't exist
+    Given The user isn't authenticated
+    And There are no events in the database
+    When The user fetches the events for some conference
+    Then The HTTP Status Code should be 404

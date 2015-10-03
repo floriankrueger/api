@@ -175,7 +175,7 @@ Then(/^There is a(?:n)? ([_a-z]+) Hash with (\d+) elements?$/) do |arg1,arg2|
   expect(data[arg1].keys.length).to eq(arg2.to_i)
 end
 
-Then (/^There is a link to(?: the)? ([a-z]+) with an href of ([a-z\/]+)$/) do |arg1,arg2|
+Then (/^There is a link to(?: the)? ([a-z]+) with an href of ([a-z0-9\/]+)$/) do |arg1,arg2|
   data = JSON.parse(last_response.body)
   expect(data['_links'][arg1]).not_to be_nil
   expect(data['_links'][arg1]['href']).to eq(arg2)
@@ -266,4 +266,32 @@ Then(/^The delivered event should be the NSSpain 2015$/) do
 
   # make sure the data is correct
   check_event(data, nsspain, nsspain_2015)
+end
+
+Then(/^The first event should be NSSpain 2015$/) do
+  # fetch the actual data from database
+  nsspain = Conference.where(:name => "NSSpain").first
+  nsspain_2015 = nsspain.events.order(start: :desc).first
+
+  # extract the actual event
+  data = JSON.parse(last_response.body)
+  events = data["_embedded"]["cc:event"]
+  event = events[0]
+
+  # make sure the data is correct
+  check_event(event, nsspain, nsspain_2015)
+end
+
+Then(/^The second event should be NSSpain 2014$/) do
+  # fetch the actual data from database
+  nsspain = Conference.where(:name => "NSSpain").first
+  nsspain_2014 = nsspain.events.order(start: :desc).last
+
+  # extract the actual event
+  data = JSON.parse(last_response.body)
+  events = data["_embedded"]["cc:event"]
+  event = events[1]
+
+  # make sure the data is correct
+  check_event(event, nsspain, nsspain_2014)
 end

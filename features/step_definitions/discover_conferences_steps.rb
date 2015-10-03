@@ -142,6 +142,11 @@ When(/^The user fetches NSSpain conference by ID$/) do
   get "/conferences/#{nsspain.id}"
 end
 
+When(/^The user fetches the events for the NSSpain conference$/) do
+  nsspain = Conference.where(:name => "NSSpain").first
+  get "/conferences/#{nsspain.id}/events"
+end
+
 Then(/^The delivered conference should be the NSSpain$/) do
   # fetch the actual data from database
   nsspain = Conference.where(:name => "NSSpain").first

@@ -21,3 +21,19 @@ get "/conferences/:conference_id/?" do
   content_type "application/hal+json"
   conference.embedded_format.to_json
 end
+
+get "/conferences/:conference_id/events" do
+  conference = Conference.find(params[:conference_id].to_i)
+  events = conference.events.order(start: :desc).collect do |event|
+    event.embedded_format
+  end
+
+  status 200
+  content_type "application/hal+json"
+  {
+    :_links => { "self" => { "href" => "/conferences/#{params[:conference_id]}/events" } },
+    :_embedded => {
+      "cc:event" => events
+    }
+  }.to_json
+end

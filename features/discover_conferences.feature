@@ -41,7 +41,7 @@ Feature: Discover Conferences
     And The fourth conference should be NSScotland
 
   @wip
-  Scenario: Fetch a specific event
+  Scenario: Fetch a specific conference
     Given The user isn't authenticated
     And The NSScotland 2015 event is in the database
     And The NSSpain 2015 event is in the database
@@ -50,7 +50,7 @@ Feature: Discover Conferences
     And The delivered conference should be the NSSpain
 
   @wip
-  Scenario: Fetch a specific event that doesn't exist
+  Scenario: Fetch a specific conference that doesn't exist
     Given The user isn't authenticated
     And There are no events in the database
     When The user fetches a conference with some ID

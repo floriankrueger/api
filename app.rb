@@ -36,6 +36,7 @@ end
 require './app/auth'
 require './app/events'
 require './app/conferences'
+require './app/continents'
 
 # Errors
 

@@ -2,6 +2,7 @@
   class Country < ActiveRecord::Base
     belongs_to :continent
     has_many :cities
+    has_many :events, through: :cities
 
     validates :code, :name, presence: true
     validates :code, uniqueness: true
@@ -20,6 +21,31 @@
       end
 
       country
+    end
+
+    def href
+      "/countries/#{self.code}"
+    end
+
+    def cities_href
+      "#{self.href}/cities"
+    end
+
+    def events_href
+      "#{self.href}/events"
+    end
+
+    def embedded_format
+      {
+        :_links => {
+          :self => { :href => self.href },
+          "cc:continent" => { :href => self.continent.href },
+          "cc:city" => { :href => self.cities_href },
+          "cc:event" => { :href => "#{self.href}/events" }
+        },
+        :code => self.code,
+        :name => self.name
+      }
     end
 
     def capitalize_name

@@ -212,13 +212,13 @@ end
 
 
 Given(/^The continents are setup$/) do
-  Continent.create(:code => "af", :name => "Africa")
-  Continent.create(:code => "an", :name => "Antarctica")
-  Continent.create(:code => "as", :name => "Asia")
-  Continent.create(:code => "eu", :name => "Europe")
-  Continent.create(:code => "na", :name => "North America")
-  Continent.create(:code => "oc", :name => "Oceania")
-  Continent.create(:code => "sa", :name => "South America")
+  Continent.where(:code => "af").first_or_create!(:name => "Africa")
+  Continent.where(:code => "an").first_or_create!(:name => "Antarctica")
+  Continent.where(:code => "as").first_or_create!(:name => "Asia")
+  Continent.where(:code => "eu").first_or_create!(:name => "Europe")
+  Continent.where(:code => "na").first_or_create!(:name => "North America")
+  Continent.where(:code => "oc").first_or_create!(:name => "Oceania")
+  Continent.where(:code => "sa").first_or_create!(:name => "South America")
 end
 
 When(/^The user sends a POST to the events collection with a valid body$/) do

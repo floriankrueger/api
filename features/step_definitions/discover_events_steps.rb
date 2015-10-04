@@ -20,6 +20,20 @@ Given(/^There are (\d+) events of the same conference in the database$/) do |arg
   end
 end
 
+Given(/^The WWDC 2015 event is in the database$/) do
+  north_america = Continent.where(:code => "na").first_or_create(:name => "North America")
+  united_states = Country.where(:code => "us").first_or_create(:name => "United States", :continent => north_america)
+  san_francisco = City.where(:code => "ussfo").first_or_create(:name => "San Francisco", :country => united_states)
+  wwdc = Conference.where(:name => "WWDC").first_or_create()
+  Event.create(
+    :start => "2015-06-08T00:00:00.000Z",
+    :end => "2015-06-12T23:59:59.999Z",
+    :web => "https://developer.apple.com/wwdc/",
+    :conference => wwdc,
+    :city => san_francisco
+  )
+end
+
 Given(/^The iOSCon 2015 event is in the database$/) do
   europe = Continent.where(:code => "eu").first_or_create(:name => "Europe")
   united_kingdom = Country.where(:code => "gb").first_or_create(:name => "United Kingdom", :continent => europe)
@@ -175,7 +189,7 @@ Then(/^There is a(?:n)? ([_a-z]+) Hash with (\d+) elements?$/) do |arg1,arg2|
   expect(data[arg1].keys.length).to eq(arg2.to_i)
 end
 
-Then (/^There is a link to(?: the)? ([a-z]+) with an href of ([a-z0-9\/]+)$/) do |arg1,arg2|
+Then (/^There is a link to(?: the)? ([:a-z]+) with an href of ([a-z0-9\/]+)$/) do |arg1,arg2|
   data = JSON.parse(last_response.body)
   expect(data['_links'][arg1]).not_to be_nil
   expect(data['_links'][arg1]['href']).to eq(arg2)
@@ -190,7 +204,7 @@ Then(/^There is an ([a-z:]+) List in the _embedded Hash$/) do |arg1|
   expect(data['_embedded'][arg1]).to be_an(Array)
 end
 
-Then(/^There is are (\d+) elements in the ([a-z:]+) list$/) do |arg1,arg2|
+Then(/^There is are (\d+) elements? in the ([a-z:]+) list$/) do |arg1,arg2|
   data = JSON.parse(last_response.body)
   expect(data['_embedded'][arg2].count).to eq(arg1.to_i)
 end

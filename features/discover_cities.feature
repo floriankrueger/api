@@ -1,5 +1,4 @@
 
-@wip
 Feature: Discover Cities
 
   Every user, regardless whether she is authenticated or not, can discover Cities using the

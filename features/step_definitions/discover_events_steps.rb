@@ -107,17 +107,17 @@ def check_event(actual_event, conference, event)
   expect(actual_conference["_links"]["cc:event"]["href"]).to eq("/conferences/#{conference.id}/events")
 
   city = actual_event["cc:city"]
-  expect(city["href"]).to eq("/cities/#{event_city.id}")
+  expect(city["href"]).to eq("/cities/#{event_city.code}")
   expect(city["code"]).to eq(event_city.code)
   expect(city["name"]).to eq(event_city.name)
 
   country = actual_event["cc:country"]
-  expect(country["href"]).to eq("/countries/#{event_country.id}")
+  expect(country["href"]).to eq("/countries/#{event_country.code}")
   expect(country["code"]).to eq(event_country.code)
   expect(country["name"]).to eq(event_country.name)
 
   continent = actual_event["cc:continent"]
-  expect(continent["href"]).to eq("/continents/#{event_continent.id}")
+  expect(continent["href"]).to eq("/continents/#{event_continent.code}")
   expect(continent["code"]).to eq(event_continent.code)
   expect(continent["name"]).to eq(event_continent.name)
 end
@@ -249,7 +249,7 @@ Then(/^Every item in the list is a valid event$/) do
 
     city = event["cc:city"]
     expect(city).not_to be_nil
-    expect(city["href"]).to match(/\/cities\/(\d+)/)
+    expect(city["href"]).to match(/\/cities\/([a-z]+)/)
     expect(city["code"]).not_to be_nil
     expect(city["code"]).to be_a(String)
     expect(city["name"]).not_to be_nil
@@ -257,7 +257,7 @@ Then(/^Every item in the list is a valid event$/) do
 
     country = event["cc:country"]
     expect(country).not_to be_nil
-    expect(country["href"]).to match(/\/countries\/(\d+)/)
+    expect(country["href"]).to match(/\/countries\/([a-z]+)/)
     expect(country["code"]).not_to be_nil
     expect(country["code"]).to be_a(String)
     expect(country["name"]).not_to be_nil
@@ -265,7 +265,7 @@ Then(/^Every item in the list is a valid event$/) do
 
     continent = event["cc:continent"]
     expect(continent).not_to be_nil
-    expect(continent["href"]).to match(/\/continents\/(\d+)/)
+    expect(continent["href"]).to match(/\/continents\/([a-z]+)/)
     expect(continent["code"]).not_to be_nil
     expect(continent["code"]).to be_a(String)
     expect(continent["name"]).not_to be_nil

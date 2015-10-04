@@ -1,4 +1,5 @@
 
+@wip
 Feature: Discover Events
 
   Every user, regardless whether she is authenticated or not, can discover Events using the

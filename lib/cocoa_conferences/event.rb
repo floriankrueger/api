@@ -10,6 +10,10 @@
     end
 
     def embedded_format
+      city = self.city
+      country = city.country
+      continent = country.continent
+
       {
         :_links => { :self => { :href => self.href } },
         :start => self.start.iso8601(3),
@@ -25,19 +29,19 @@
           }
         },
         "cc:city" => {
-          :href => "/cities/#{self.city.id}",
-          :code => self.city.code,
-          :name => self.city.name
+          :href => city.href,
+          :code => city.code,
+          :name => city.name
         },
         "cc:country" => {
-          :href => "/countries/#{self.city.country.id}",
-          :code => self.city.country.code,
-          :name => self.city.country.name
+          :href => country.href,
+          :code => country.code,
+          :name => country.name
         },
         "cc:continent" => {
-          :href => "/continents/#{self.city.country.continent.id}",
-          :code => self.city.country.continent.code,
-          :name => self.city.country.continent.name
+          :href => continent.href,
+          :code => continent.code,
+          :name => continent.name
         }
       }
     end

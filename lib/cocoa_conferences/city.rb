@@ -22,6 +22,29 @@
       city
     end
 
+    def href
+      "/cities/#{self.code}"
+    end
+
+    def events_href
+      "#{self.href}/events"
+    end
+
+    def embedded_format
+      country = self.country
+
+      {
+        :_links => {
+          :self => { :href => self.href },
+          "cc:country" => { :href => country.href },
+          "cc:continent" => { :href => country.continent.href },
+          "cc:event" => { :href => self.events_href }
+        },
+        :code => self.code,
+        :name => self.name
+      }
+    end
+
     def capitalize_name
       name.capitalize!
     end

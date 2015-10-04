@@ -1,5 +1,4 @@
 
-@wip
 Feature: Discover Continents
 
   Every user, regardless whether she is authenticated or not, can discover Continents using the

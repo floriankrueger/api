@@ -136,6 +136,21 @@ Then(/^The first event should be iOSCon 2015$/) do
   check_event(event, ioscon, ioscon_2015)
 end
 
+
+Then(/^The first event should be NSScotland 2015$/) do
+  # fetch the actual data from database
+  nsscotland = Conference.where(:name => "NSScotland").first
+  nsscotland_2015 = nsscotland.events.first
+
+  # extract the actual event
+  data = JSON.parse(last_response.body)
+  events = data["_embedded"]["cc:event"]
+  event = events[0]
+
+  # make sure the data is correct
+  check_event(event, nsscotland, nsscotland_2015)
+end
+
 Then(/^The second event should be iOS Dev UK 2015$/) do
   # fetch the actual data from database
   iosdevuk = Conference.where(:name => "iOS Dev UK").first

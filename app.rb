@@ -38,6 +38,7 @@ require './app/events'
 require './app/conferences'
 require './app/continents'
 require './app/countries'
+require './app/cities'
 
 # Errors
 

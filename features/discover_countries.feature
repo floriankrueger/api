@@ -1,5 +1,4 @@
 
-@wip
 Feature: Discover Countries
 
   Every user, regardless whether she is authenticated or not, can discover Countries using the

@@ -1,4 +1,16 @@
 
+When(/^The user sends a GET to \/cities$/) do
+  get "/cities"
+end
+
+When(/^The user sends a GET to \/cities\/([a-z]+)$/) do |arg1|
+  get "/cities/#{arg1}"
+end
+
+When(/^The user sends a GET to \/cities\/([a-z]+)\/([a-z]+)$/) do |arg1,arg2|
+  get "/cities/#{arg1}/#{arg2}"
+end
+
 Then(/^Every item in the list is a valid city$/) do
   data = JSON.parse(last_response.body)
   cities = data['_embedded']['cc:city']
@@ -44,6 +56,45 @@ Then(/^The second city should be Edinburgh$/) do
 
   # make sure the data is correct
   check_city(city, edinburgh)
+end
+
+Then(/^The third city should be Logroño$/) do
+  # fetch the expected data from database
+  logrono = City.where(:code => "eslgr").first
+
+  # extract the actual country
+  data = JSON.parse(last_response.body)
+  cities = data['_embedded']['cc:city']
+  city = cities[2]
+
+  # make sure the data is correct
+  check_city(city, logrono)
+end
+
+Then(/^The fourth city should be London$/) do
+  # fetch the expected data from database
+  london = City.where(:code => "gblon").first
+
+  # extract the actual country
+  data = JSON.parse(last_response.body)
+  cities = data['_embedded']['cc:city']
+  city = cities[3]
+
+  # make sure the data is correct
+  check_city(city, london)
+end
+
+Then(/^The fifth city should be San Fransisco$/) do
+  # fetch the expected data from database
+  san_francisco = City.where(:code => "ussfo").first
+
+  # extract the actual country
+  data = JSON.parse(last_response.body)
+  cities = data['_embedded']['cc:city']
+  city = cities[4]
+
+  # make sure the data is correct
+  check_city(city, san_francisco)
 end
 
 Then(/^The third city should be London$/) do

@@ -4,7 +4,7 @@
 
 # cocoaconferences.org API
 
-## TODO
+## Tasks
 
-- [] Come up with a proper README.md
-- [] Come up with a proper CONTRIBUTING.md
+- [ ] Come up with a proper README.md
+- [ ] Come up with a proper CONTRIBUTING.md

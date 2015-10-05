@@ -2,6 +2,9 @@
 require 'bundler'
 Bundler.require
 
+require 'coveralls'
+Coveralls.wear!
+
 require './lib/cocoa_conferences'
 
 # fakes

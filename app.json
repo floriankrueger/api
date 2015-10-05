@@ -1,0 +1,29 @@
+{
+  "name": "cocoaconferences.org",
+  "description": "CocoaConferences is a tool to discover and share conferences about or related to Cooca. It allows you to interact with other users who are interested in these conferences.",
+  "website": "http://www.cocoaconferences.org/",
+  "repository": "https://github.com/cocoaconferences/api",
+  "scripts": {
+    "postdeploy": "bundle exec rake db:migrate"
+  },
+  "env": {
+    "SESSION_MASTER_KEY": {
+      "description": "The key for encrypting the users auth token and secrets",
+      "generator": "secret",
+      "required": true
+    },
+    "TWITTER_CONSUMER_KEY": {
+      "default": "",
+      "required": true
+    },
+    "TWITTER_CONSUMER_SECRET": {
+      "default": "",
+      "required": true
+    }
+  },
+  "image": "heroku/ruby",
+  "addons": [
+    "heroku-postgresql:hobby-dev",
+    "heroku-redis:hobby-dev"
+  ]
+}
